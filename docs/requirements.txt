@@ -1,0 +1,6 @@
+furo
+matplotlib
+myst-nb
+myst-parser
+numpy
+sphinx
