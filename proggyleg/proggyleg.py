@@ -700,15 +700,18 @@ def window_form(points, window_size=5):
 
 
 def exponential_form(points, window_size=5):
-    form = [points[0]]
-    for i, p in enumerate(points[1:], 1):
+    form = []
+    for i, p in enumerate(points, 1):
 
-        # don't weight a short prior window more than its actual size
-        ws = min(window_size, i + 1)
+        if form:
+            f_prev = form[-1]
+        else:
+            # start all teams on average form
+            f_prev = 1.5
 
         form.append(
-            ((ws - 1) / ws) * form[-1] +
-            (1 / ws) * p
+            ((window_size - 1) / window_size) * f_prev +
+            (1 / window_size) * p
         )
     return form
 
