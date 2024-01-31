@@ -694,6 +694,25 @@ def plot_extrapolated_performance(
     ax.set_ylim(-2, 117)
 
 
+
+def window_form(points, window_size=5):
+    return np.convolve(points, np.ones(window_size), "valid") / window_size
+
+
+def exponential_form(points, window_size=5):
+    form = [points[0]]
+    for i, p in enumerate(points[1:], 1):
+
+        # don't weight a short prior window more than its actual size
+        ws = min(window_size, i + 1)
+
+        form.append(
+            ((ws - 1) / ws) * form[-1] +
+            (1 / ws) * p
+        )
+    return form
+
+
 @setup_and_handle_figure
 def plot_form(
     data,
@@ -707,23 +726,22 @@ def plot_form(
     max_games = data["max_games"]
     current_points = data["current_points"]
 
-    rolling_points = {
-        team: np.convolve(data["points"][team], np.ones(window_size), "valid")
-        / window_size
+    form = {
+        team: exponential_form(data["points"][team], window_size)
         for team in ranked_teams
     }
     ranked_by_form_teams = sorted(
         ranked_teams,
         key=lambda team: (
-            rolling_points[team][-1],
+            form[team][-1],
             data["cumgoaldiff"][team][-1],
             team,
         ),
     )
 
     for team in ranked_by_form_teams:
-        ys = rolling_points[team]
-        xs = np.arange(window_size, len(ys) + window_size)
+        ys = form[team]
+        xs = np.arange(1, len(ys) + 1)
 
         ax.plot(
             xs,
@@ -765,7 +783,7 @@ def plot_form(
         )
 
         xs = [games_played[team] - 0.75, legend_xloc]
-        ys = [rolling_points[team][-1], legend_yloc]
+        ys = [form[team][-1], legend_yloc]
         ax.plot(
             xs,
             ys,
@@ -780,7 +798,7 @@ def plot_form(
     form_relegation = current_points[team] / games_played[team]
     relegation_color = (0.3, 0.6, 0.0)
     ax.text(
-        window_size - 0.5,
+        0.0,
         form_relegation,
         "Relegation",
         va="bottom",
@@ -789,7 +807,7 @@ def plot_form(
         family=fontfamily,
     )
     ax.plot(
-        [window_size - 0.5, max_games],
+        [0.5, max_games],
         [form_relegation] * 2,
         zorder=-10,
         color=relegation_color,
@@ -801,7 +819,7 @@ def plot_form(
     form_champs = current_points[team] / games_played[team]
     champs_color = (0.0, 0.6, 0.3)
     ax.text(
-        window_size - 0.5,
+        0.0,
         form_champs,
         "Champions League",
         va="bottom",
@@ -810,7 +828,7 @@ def plot_form(
         family=fontfamily,
     )
     ax.plot(
-        [window_size - 0.5, max_games],
+        [0.5, max_games],
         [form_champs] * 2,
         zorder=-10,
         color=champs_color,
@@ -822,7 +840,7 @@ def plot_form(
     form_winning = current_points[team] / games_played[team]
     champs_color = (0.0, 0.5, 0.4)
     ax.text(
-        window_size - 0.5,
+        0.0,
         form_winning,
         "Winning",
         va="bottom",
@@ -831,7 +849,7 @@ def plot_form(
         family=fontfamily,
     )
     ax.plot(
-        [window_size - 0.5, max_games],
+        [0.5, max_games],
         [form_winning] * 2,
         zorder=-10,
         color=champs_color,
@@ -839,9 +857,9 @@ def plot_form(
         alpha=2 / 3,
     )
 
-    set_ax_limits(ax, max_games, x_start=window_size - 0.5)
+    set_ax_limits(ax, max_games, x_start=0.5)
     ax.set_xlabel("Games Played")
-    ax.set_ylabel(f"Points per game (last {window_size})")
+    ax.set_ylabel("Average points per game")
     ax.set_ylim(-0.1, 3.1)
 
 
