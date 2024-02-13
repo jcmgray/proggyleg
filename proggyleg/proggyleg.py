@@ -37,6 +37,7 @@ def process_data(filename, penalties=None):
     points = {}
     cumpoints = {}
     cumgoaldiff = {}
+    cumgoalsscored = {}
 
     for line in lines:
         score = line[6]
@@ -69,6 +70,13 @@ def process_data(filename, penalties=None):
                 cumpoints[away_team][-1] + away_pts
             )
 
+            cumgoalsscored.setdefault(home_team, [0]).append(
+                cumgoalsscored[home_team][-1] + home
+            )
+            cumgoalsscored.setdefault(away_team, [0]).append(
+                cumgoalsscored[away_team][-1] + away
+            )
+
             # goal diff
             home_goaldiff = home - away
             away_goaldiff = away - home
@@ -94,7 +102,12 @@ def process_data(filename, penalties=None):
     max_games = max(games_played.values())
 
     ranked_teams = sorted(
-        teams, key=lambda team: (cumpoints[team][-1], cumgoaldiff[team][-1], team)
+        teams, key=lambda team: (
+            cumpoints[team][-1],
+            cumgoaldiff[team][-1],
+            cumgoalsscored[team][-1],
+            team,
+        )
     )
     places = {team: i for i, team in enumerate(ranked_teams)}
 
@@ -109,6 +122,7 @@ def process_data(filename, penalties=None):
         "games_played": games_played,
         "max_games": max_games,
         "places": places,
+        "cumgoalsscored": cumgoalsscored,
     }
 
 
@@ -328,6 +342,12 @@ def goaldiff_after_ngames(data, team, n):
     return data["cumgoaldiff"][team][: n + 1][-1]
 
 
+def goalsscored_after_ngames(data, team, n):
+    if n == 0:
+        return 0
+    return data["cumgoalsscored"][team][: n + 1][-1]
+
+
 @setup_and_handle_figure
 def plot_positions(
     data,
@@ -347,6 +367,7 @@ def plot_positions(
             key=lambda team: (
                 -pts_after_ngames(data, team, n),
                 -goaldiff_after_ngames(data, team, n),
+                -goalsscored_after_ngames(data, team, n),
                 team,
             ),
             reverse=True,
@@ -587,12 +608,16 @@ def plot_extrapolated_performance(
     cumpoints = data["cumpoints"]
     games_played = data["games_played"]
     max_games = data["max_games"]
-    places = data["places"]
-    current_points = data["current_points"]
+    extrap_points  = {
+        team: 114 * cumpoints[team][1:] / (3 * np.arange(1, games_played[team]))
+        for team in ranked_teams
+    }
+    ranked_teams.sort(key=lambda team: extrap_points[team][-1])
+    places = {team: i for i, team in enumerate(ranked_teams)}
 
     for i, team in enumerate(ranked_teams):
         xs = np.arange(1, games_played[team])
-        ys = 114 * cumpoints[team][1:] / (3 * np.arange(1, games_played[team]))
+        ys = extrap_points[team]
 
         if i == 2:
             abs_perf_relegation = ys[-1]
@@ -624,7 +649,7 @@ def plot_extrapolated_performance(
 
     for team in ranked_teams:
         legend_xloc = games_played[team] * 1.05
-        legend_yloc = 100 * places[team] / 19
+        legend_yloc = 3 * 38 * places[team] / 19
 
         ax.text(
             legend_xloc,
@@ -639,7 +664,7 @@ def plot_extrapolated_performance(
         )
 
         xs = [games_played[team] - 0.75, legend_xloc]
-        ys = [current_points[team] / (3 / 114 * games_played[team]), legend_yloc]
+        ys = [extrap_points[team][-1], legend_yloc]
         ax.plot(
             xs,
             ys,
