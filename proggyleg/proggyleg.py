@@ -18,13 +18,14 @@ def update_data(year=2023):
     import urllib
 
     urllib.request.urlretrieve(
-        f"https://fixturedownload.com/download/epl-{year}-GMTStandardTime.csv",
+        f"https://fixturedownload.com/download/epl-{year}-UTC.csv",
         pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv"
     )
 
 
 def process_data(filename, penalties=None):
     import re
+    from datetime import datetime
 
     penalties = penalties or {}
 
@@ -33,6 +34,11 @@ def process_data(filename, penalties=None):
 
     _, *lines = lines.split("\n")[:-1]
     lines = [line.split(",") for line in lines]
+    for line in lines:
+        line[2] = datetime.strptime(line[2], "%d/%m/%Y %H:%M")
+
+    # sort by date
+    lines.sort(key=lambda line: line[2])
 
     points = {}
     cumpoints = {}
