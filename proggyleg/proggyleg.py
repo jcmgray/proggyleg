@@ -902,7 +902,7 @@ def autoplot(year=2023, which="cumulative", highlight=None, **kwargs):
 
     year = str(year)
     if year == "2023":
-        penalties = {"Everton": 10}
+        penalties = {"Everton": 6}
     else:
         penalties = None
 
