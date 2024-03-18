@@ -15,11 +15,11 @@ def set_alpha(c, alpha):
 
 
 def update_data(year=2023):
-    import urllib
+    import urllib.request
 
     urllib.request.urlretrieve(
         f"https://fixturedownload.com/download/epl-{year}-UTC.csv",
-        pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv"
+        pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv",
     )
 
 
@@ -108,12 +108,13 @@ def process_data(filename, penalties=None):
     max_games = max(games_played.values())
 
     ranked_teams = sorted(
-        teams, key=lambda team: (
+        teams,
+        key=lambda team: (
             cumpoints[team][-1],
             cumgoaldiff[team][-1],
             cumgoalsscored[team][-1],
             team,
-        )
+        ),
     )
     places = {team: i for i, team in enumerate(ranked_teams)}
 
@@ -614,7 +615,7 @@ def plot_extrapolated_performance(
     cumpoints = data["cumpoints"]
     games_played = data["games_played"]
     max_games = data["max_games"]
-    extrap_points  = {
+    extrap_points = {
         team: 114 * cumpoints[team][1:] / (3 * np.arange(1, games_played[team]))
         for team in ranked_teams
     }
@@ -725,7 +726,6 @@ def plot_extrapolated_performance(
     ax.set_ylim(-2, 117)
 
 
-
 def window_form(points, window_size=5):
     return np.convolve(points, np.ones(window_size), "valid") / window_size
 
@@ -733,17 +733,13 @@ def window_form(points, window_size=5):
 def exponential_form(points, window_size=5):
     form = []
     for i, p in enumerate(points, 1):
-
         if form:
             f_prev = form[-1]
         else:
             # start all teams on average form
             f_prev = 1.5
 
-        form.append(
-            ((window_size - 1) / window_size) * f_prev +
-            (1 / window_size) * p
-        )
+        form.append(((window_size - 1) / window_size) * f_prev + (1 / window_size) * p)
     return form
 
 
@@ -902,7 +898,10 @@ def autoplot(year=2023, which="cumulative", highlight=None, **kwargs):
 
     year = str(year)
     if year == "2023":
-        penalties = {"Everton": 6}
+        penalties = {
+            "Everton": 6,
+            "Nottingham Forest": 4,
+        }
     else:
         penalties = None
 
