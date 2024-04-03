@@ -9,6 +9,12 @@ index_premier_league
 ```
 
 ```{toctree}
+:maxdepth: 2
+
+index_championship
+```
+
+```{toctree}
 :caption: Development
 :hidden:
 

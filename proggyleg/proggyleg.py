@@ -73,7 +73,6 @@ def parse_fixturedownload_data(contents):
     return data
 
 
-
 def parse_datetime(date_str):
     from datetime import datetime
 
@@ -87,8 +86,8 @@ def parse_footballdata_data(contents):
     import csv
 
     reader = [
-        row for row in
-        csv.DictReader(contents.splitlines())
+        row
+        for row in csv.DictReader(contents.splitlines())
         if row["FTHG"] and row["FTAG"]
     ]
     reader.sort(key=lambda x: parse_datetime(x["Date"]))
@@ -176,18 +175,19 @@ def compute_cumulative_quantities(data, penalties=None):
     places = {team: i for i, team in enumerate(ranked_teams)}
 
     return {
-        "teams": teams,
-        "ranked_teams": ranked_teams,
-        "points": points,
-        "cumpoints": cumpoints,
         "cumgoaldiff": cumgoaldiff,
+        "cumgoalsscored": cumgoalsscored,
+        "cumpoints": cumpoints,
         "current_points": current_points,
-        "max_points": max_points,
         "games_played": games_played,
         "max_games": max_games,
-        "total_games": 2 * (len(teams) - 1),
+        "max_points": max_points,
+        "num_teams": len(teams),
         "places": places,
-        "cumgoalsscored": cumgoalsscored,
+        "points": points,
+        "ranked_teams": ranked_teams,
+        "teams": teams,
+        "total_games": 2 * (len(teams) - 1),
     }
 
 
@@ -202,6 +202,7 @@ style["Bournemouth"] = ("#DA291C", "#000000", "$B$")
 style["Bradford"] = ("#ffbf00", "#800000", "$B$")
 style["Brentford"] = ("#e30613", "#fbb800", "$B$")
 style["Brighton"] = ("#0057B8", "#FFCD00", "$B$")
+style["Bristol City"] = ('#e3131e', '#ffffff', "$B$")
 style["Burnley"] = ("#6C1D45", "#ede939", "$B$")
 style["Cardiff"] = ("#0070B5", "#D11524", "$C$")
 style["Charlton"] = ("#000000", "#d4021d", "$C$")
@@ -221,14 +222,18 @@ style["Luton"] = ("#002e62", "#fb861f", "$L$")
 style["Man City"] = ("#6CABDD", "#1C2C5B", "$M$")
 style["Man Utd"] = ("#DA020E", "#FBE122", "$M$")
 style["Middlesbrough"] = ("#DE1B22", "#FFFFFF", "$M$")
+style["Millwall"] = ('#00337b', '#90a4a3', "$M$")
 style["Newcastle"] = ("#241F20", "#FFFFFF", "$N$")
 style["Norwich"] = ("#00A650", "#FFF200", "$N$")
 style["Nottingham Forest"] = ("#DD0000", "#FFFFFF", "$N$")
 style["Oldham"] = ("#004998", "#ffffff", "$O$")
+style["Plymouth"] = ('#003c2b', '#d5a44d', "$P$")
 style["Portsmouth"] = ("#001489", "#fbfdff", "$P$")
+style["Preston"] = ('#f4f4f4', '#000055', "$P$")
 style["QPR"] = ("#175ba5", "#ffffff", "$Q$")
 style["QRP"] = ("#1D5BA4", "#FFFFFF", "$Q$")
 style["Reading"] = ("#004494", "#FFFFFF", "$R$")
+style["Rotherham"] = ('#e31720', '#ffffff', "$R$")
 style["Sheffield Utd"] = ("#EE2737", "#000000", "$S$")
 style["Sheffield Weds"] = ("#4482d0", "#eab202", "$S$")
 style["Southampton"] = ("#D71920", "#130C0E", "$S$")
@@ -243,7 +248,6 @@ style["West Ham"] = ("#7A263A", "#1BB1E7", "$W$")
 style["Wigan"] = ("#1d59af", "#FFFFFF", "$W$")
 style["Wimbledon"] = ("#034bd4", "#ffff00", "$W$")
 style["Wolves"] = ("#FDB913", "#231F20", "$W$")
-
 
 
 fontfamily = "monospace"
@@ -343,7 +347,7 @@ def plot_cumulative_points(
 
     for team in ranked_teams:
         legend_xloc = games_played[team] * 1.05
-        legend_yloc = max_points * places[team] / 19
+        legend_yloc = max_points * places[team] / (data["num_teams"] - 1)
 
         ax.text(
             legend_xloc,
@@ -556,7 +560,7 @@ def plot_positions(
     ax.set_ylabel("Position")
 
     set_ax_limits(ax, max_games, data["total_games"])
-    ax.set_ylim(-0.5, 19.5)
+    ax.set_ylim(-0.5, data["num_teams"] - 0.5)
     ax.set_yticks([])
 
 
@@ -612,7 +616,7 @@ def plot_relative_performance(
 
     for team in ranked_teams:
         legend_xloc = games_played[team] * 1.05
-        legend_yloc = places[team] / 19
+        legend_yloc = places[team] / (data["num_teams"] - 1)
 
         ax.text(
             legend_xloc,
@@ -699,7 +703,8 @@ def plot_extrapolated_performance(
     games_played = data["games_played"]
     max_games = data["max_games"]
     extrap_points = {
-        team: 114
+        team: 3
+        * data["total_games"]
         * cumpoints[team][1:]
         / (3 * np.arange(1, games_played[team]))
         for team in ranked_teams
@@ -741,7 +746,9 @@ def plot_extrapolated_performance(
 
     for team in ranked_teams:
         legend_xloc = games_played[team] * 1.05
-        legend_yloc = 3 * data["total_games"] * places[team] / 19
+        legend_yloc = (
+            3 * data["total_games"] * places[team] / (data["num_teams"] - 1)
+        )
 
         ax.text(
             legend_xloc,
@@ -810,7 +817,7 @@ def plot_extrapolated_performance(
     set_ax_limits(ax, max_games, data["total_games"], x_start=0.5)
     ax.set_xlabel("Games Played")
     ax.set_ylabel("Extrapolated Points")
-    ax.set_ylim(-2, 117)
+    ax.set_ylim(-2, 3 * (data["total_games"] + 1))
 
 
 def window_form(points, window_size=5):
@@ -887,7 +894,7 @@ def plot_form(
 
     for i, team in enumerate(ranked_by_form_teams):
         legend_xloc = games_played[team] * 1.05
-        legend_yloc = 3 * i / 19
+        legend_yloc = 3 * i / (data["num_teams"] - 1)
 
         ax.text(
             legend_xloc,
@@ -1002,11 +1009,11 @@ def get_footballdata(year, league="E0"):
 
 def autoplot(
     year=2023,
+    league="E0",
     which="cumulative",
     highlight=None,
     source="footballdata",
-    league="E0",
-    **kwargs
+    **kwargs,
 ):
     # import pathlib
 
@@ -1038,7 +1045,6 @@ def autoplot(
     data = compute_cumulative_quantities(data, penalties=penalties)
 
     with mpl.style.context(NEUTRAL_STYLE):
-
         height = 7
         width = 12 * (data["max_games"] / data["total_games"]) ** 0.5
 
