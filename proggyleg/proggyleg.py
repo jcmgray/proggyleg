@@ -2,9 +2,9 @@ import collections
 import functools
 import pathlib
 
-import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def set_alpha(c, alpha):
@@ -14,85 +14,142 @@ def set_alpha(c, alpha):
     return (*rgb, alpha)
 
 
-def update_data(year=2023):
+def update_data(year=2023, source="footballdata"):
     import urllib.request
 
-    urllib.request.urlretrieve(
-        f"https://fixturedownload.com/download/epl-{year}-UTC.csv",
-        pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv",
-    )
+    if source == "fixturedownload":
+        target = pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv"
+        url = f"https://fixturedownload.com/download/epl-{year}-UTC.csv"
+
+    elif source == "footballdata":
+        target = pathlib.Path(__file__).parent / f"data/E0-{year}.csv"
+        url = (
+            "https://www.football-data.co.uk/mmz4281/"
+            f"{str(year)[-2:]}{str(year + 1)[-2:]}/E0.csv"
+        )
+
+    if target.exists():
+        print(f"Removing {target}")
+        target.unlink()
+
+    print(f"Downloading data for {year}")
+    urllib.request.urlretrieve(url, target)
 
 
-def process_data(filename, penalties=None):
+team_aliases = {
+    "Man United": "Man Utd",
+    "Spurs": "Tottenham",
+    "Nott'm Forest": "Nottingham Forest",
+    "Sheffield United": "Sheffield Utd",
+}
+
+
+def parse_fixturedownload_data(contents):
+    import csv
     import re
     from datetime import datetime
 
+    reader = list(csv.DictReader(contents.splitlines()))
+    reader.sort(key=lambda x: datetime.strptime(x["Date"], r"%d/%m/%Y %H:%M"))
+
+    data = []
+    for row in reader:
+        home_team = row["Home Team"]
+        home_team = team_aliases.get(home_team, home_team)
+        away_team = row["Away Team"]
+        away_team = team_aliases.get(away_team, away_team)
+        score = row["Result"]
+        match = re.match(r"(\d+)\s?-\s?(\d+)", score)
+        if match:
+            data.append(
+                (
+                    home_team,
+                    away_team,
+                    int(match.group(1)),
+                    int(match.group(2)),
+                )
+            )
+
+    return data
+
+
+
+def parse_datetime(date_str):
+    from datetime import datetime
+
+    try:
+        return datetime.strptime(date_str, r"%d/%m/%y")
+    except ValueError:
+        return datetime.strptime(date_str, r"%d/%m/%Y")
+
+
+def parse_footballdata_data(contents):
+    import csv
+
+    reader = [
+        row for row in
+        csv.DictReader(contents.splitlines())
+        if row["FTHG"] and row["FTAG"]
+    ]
+    reader.sort(key=lambda x: parse_datetime(x["Date"]))
+    data = []
+    for row in reader:
+        home_team = row["HomeTeam"]
+        home_team = team_aliases.get(home_team, home_team)
+        away_team = row["AwayTeam"]
+        away_team = team_aliases.get(away_team, away_team)
+        home_score = int(row["FTHG"])
+        away_score = int(row["FTAG"])
+        data.append((home_team, away_team, home_score, away_score))
+    return data
+
+
+def compute_cumulative_quantities(data, penalties=None):
     penalties = penalties or {}
-
-    with open(filename, "r") as f:
-        lines = f.read()
-
-    _, *lines = lines.split("\n")[:-1]
-    lines = [line.split(",") for line in lines]
-    for line in lines:
-        line[2] = datetime.strptime(line[2], "%d/%m/%Y %H:%M")
-
-    # sort by date
-    lines.sort(key=lambda line: line[2])
 
     points = {}
     cumpoints = {}
     cumgoaldiff = {}
     cumgoalsscored = {}
 
-    for line in lines:
-        score = line[6]
-        match = re.match(r"(\d+) - (\d+)", score)
-        if match:
-            home, away = match.groups()
-            home, away = int(home), int(away)
+    for home_team, away_team, home_goals, away_goals in data:
+        # points
+        if home_goals > away_goals:
+            home_pts = 3
+            away_pts = 0
+        elif away_goals > home_goals:
+            home_pts = 0
+            away_pts = 3
+        else:
+            home_pts = away_pts = 1
 
-            # teams
-            home_team = line[4]
-            away_team = line[5]
+        points.setdefault(home_team, []).append(home_pts)
+        points.setdefault(away_team, []).append(away_pts)
 
-            # points
-            if home > away:
-                home_pts = 3
-                away_pts = 0
-            elif away > home:
-                home_pts = 0
-                away_pts = 3
-            else:
-                home_pts = away_pts = 1
+        cumpoints.setdefault(home_team, [0]).append(
+            cumpoints[home_team][-1] + home_pts
+        )
+        cumpoints.setdefault(away_team, [0]).append(
+            cumpoints[away_team][-1] + away_pts
+        )
 
-            points.setdefault(home_team, []).append(home_pts)
-            points.setdefault(away_team, []).append(away_pts)
+        cumgoalsscored.setdefault(home_team, [0]).append(
+            cumgoalsscored[home_team][-1] + home_goals
+        )
+        cumgoalsscored.setdefault(away_team, [0]).append(
+            cumgoalsscored[away_team][-1] + away_goals
+        )
 
-            cumpoints.setdefault(home_team, [0]).append(
-                cumpoints[home_team][-1] + home_pts
-            )
-            cumpoints.setdefault(away_team, [0]).append(
-                cumpoints[away_team][-1] + away_pts
-            )
+        # goal diff
+        home_goaldiff = home_goals - away_goals
+        away_goaldiff = away_goals - home_goals
 
-            cumgoalsscored.setdefault(home_team, [0]).append(
-                cumgoalsscored[home_team][-1] + home
-            )
-            cumgoalsscored.setdefault(away_team, [0]).append(
-                cumgoalsscored[away_team][-1] + away
-            )
-
-            # goal diff
-            home_goaldiff = home - away
-            away_goaldiff = away - home
-
-            cumgoaldiff.setdefault(home_team, [0]).append(
-                cumgoaldiff[home_team][-1] + home_goaldiff
-            )
-            cumgoaldiff.setdefault(away_team, [0]).append(
-                cumgoaldiff[away_team][-1] + away_goaldiff
-            )
+        cumgoaldiff.setdefault(home_team, [0]).append(
+            cumgoaldiff[home_team][-1] + home_goaldiff
+        )
+        cumgoaldiff.setdefault(away_team, [0]).append(
+            cumgoaldiff[away_team][-1] + away_goaldiff
+        )
 
     teams = sorted(cumpoints.keys())
     points = {team: np.array(ps) for team, ps in points.items()}
@@ -128,6 +185,7 @@ def process_data(filename, penalties=None):
         "max_points": max_points,
         "games_played": games_played,
         "max_games": max_games,
+        "total_games": 2 * (len(teams) - 1),
         "places": places,
         "cumgoalsscored": cumgoalsscored,
     }
@@ -135,38 +193,57 @@ def process_data(filename, penalties=None):
 
 style = collections.defaultdict(lambda: ("grey", "white", "o"))
 style["Arsenal"] = ("#EF0107", "#FFFFFF", "$A$")
-style["Newcastle"] = ("#241F20", "#FFFFFF", "$N$")
-style["Man City"] = ("#6CABDD", "#1C2C5B", "$M$")
-style["Spurs"] = ("#132257", "#FFFFFF", "$T$")
-style["Man Utd"] = ("#DA020E", "#FBE122", "$M$")
-style["Brighton"] = ("#0057B8", "#FFCD00", "$B$")
 style["Aston Villa"] = ("#95BFE5", "#670E36", "$A$")
-style["Crystal Palace"] = ("#1B458F", "#C4122E", "$C$")
-style["Fulham"] = ("#000000", "#CC0000", "$F$")
-style["Liverpool"] = ("#C8102E", "#00B2A9", "$L$")
+style["Birmingham"] = ("#183b90", "#FFFFFF", "$B$")
+style["Blackburn"] = ("#009EE0", "#FFFFFF", "$B$")
+style["Blackpool"] = ("#F68712", "#FFFFFF", "$B$")
+style["Bolton"] = ("#263c7e", "#c80024", "$B$")
 style["Bournemouth"] = ("#DA291C", "#000000", "$B$")
-style["Leeds"] = ("#1D428A", "#FFCD00", "$L$")
-style["Wolves"] = ("#FDB913", "#231F20", "$W$")
-style["Nottingham Forest"] = ("#DD0000", "#FFFFFF", "$N$")
-style["Southampton"] = ("#D71920", "#130C0E", "$S$")
-style["Everton"] = ("#003399", "#FFFFFF", "$E$")
-style["Chelsea"] = ("#034694", "#DBA111", "$C$")
-style["Leicester"] = ("#003090", "#FDBE11", "$L$")
+style["Bradford"] = ("#ffbf00", "#800000", "$B$")
 style["Brentford"] = ("#e30613", "#fbb800", "$B$")
-style["West Ham"] = ("#7A263A", "#1BB1E7", "$W$")
+style["Brighton"] = ("#0057B8", "#FFCD00", "$B$")
 style["Burnley"] = ("#6C1D45", "#ede939", "$B$")
-style["Watford"] = ("#FBEE23", "#ED2127", "$W$")
-style["Norwich"] = ("#00A650", "#FFF200", "$N$")
-style["Sheffield Utd"] = ("#EE2737", "#000000", "$S$")
-style["West Brom"] = ("#122F67", "#FFFFFF", "$W$")
 style["Cardiff"] = ("#0070B5", "#D11524", "$C$")
+style["Charlton"] = ("#000000", "#d4021d", "$C$")
+style["Chelsea"] = ("#034694", "#DBA111", "$C$")
+style["Coventry"] = ("#87beef", "#cbd7de", "$C$")
+style["Crystal Palace"] = ("#1B458F", "#C4122E", "$C$")
+style["Derby"] = ("#000000", "#FFFFFF", "$D$")
+style["Everton"] = ("#003399", "#FFFFFF", "$E$")
+style["Fulham"] = ("#000000", "#CC0000", "$F$")
 style["Huddersfield"] = ("#0E63AD", "#FFFFFF", "$H$")
-style["Stoke"] = ("#E03A3E", "#1B449C", "$S$")
-style["Swansea"] = ("#000000", "#FFFFFF", "$S$")
 style["Hull"] = ("#F18A01", "#000000", "$H$")
-style["Middlesbrough"] = ("#DE1B22", "#FFFFFF", "$M$")
-style["Sunderland"] = ("#eb172b", "#211e1e", "$S$")
+style["Ipswich"] = ("#3764a4", "#df2834", "$I$")
+style["Leeds"] = ("#1D428A", "#FFCD00", "$L$")
+style["Leicester"] = ("#003090", "#FDBE11", "$L$")
+style["Liverpool"] = ("#C8102E", "#00B2A9", "$L$")
 style["Luton"] = ("#002e62", "#fb861f", "$L$")
+style["Man City"] = ("#6CABDD", "#1C2C5B", "$M$")
+style["Man Utd"] = ("#DA020E", "#FBE122", "$M$")
+style["Middlesbrough"] = ("#DE1B22", "#FFFFFF", "$M$")
+style["Newcastle"] = ("#241F20", "#FFFFFF", "$N$")
+style["Norwich"] = ("#00A650", "#FFF200", "$N$")
+style["Nottingham Forest"] = ("#DD0000", "#FFFFFF", "$N$")
+style["Oldham"] = ("#004998", "#ffffff", "$O$")
+style["Portsmouth"] = ("#001489", "#fbfdff", "$P$")
+style["QPR"] = ("#175ba5", "#ffffff", "$Q$")
+style["QRP"] = ("#1D5BA4", "#FFFFFF", "$Q$")
+style["Reading"] = ("#004494", "#FFFFFF", "$R$")
+style["Sheffield Utd"] = ("#EE2737", "#000000", "$S$")
+style["Sheffield Weds"] = ("#4482d0", "#eab202", "$S$")
+style["Southampton"] = ("#D71920", "#130C0E", "$S$")
+style["Stoke"] = ("#E03A3E", "#1B449C", "$S$")
+style["Sunderland"] = ("#eb172b", "#211e1e", "$S$")
+style["Swansea"] = ("#000000", "#FFFFFF", "$S$")
+style["Swindon"] = ("#dd0e14", "#b58e00", "$S$")
+style["Tottenham"] = ("#132257", "#FFFFFF", "$T$")
+style["Watford"] = ("#FBEE23", "#ED2127", "$W$")
+style["West Brom"] = ("#122F67", "#FFFFFF", "$W$")
+style["West Ham"] = ("#7A263A", "#1BB1E7", "$W$")
+style["Wigan"] = ("#1d59af", "#FFFFFF", "$W$")
+style["Wimbledon"] = ("#034bd4", "#ffff00", "$W$")
+style["Wolves"] = ("#FDB913", "#231F20", "$W$")
+
 
 
 fontfamily = "monospace"
@@ -214,13 +291,13 @@ def setup_and_handle_figure(fn):
     return wrapped
 
 
-def set_ax_limits(ax, max_games, x_start=-0.5):
+def set_ax_limits(ax, max_games, total_games, x_start=-0.5):
     from matplotlib.ticker import MaxNLocator
 
-    if max_games > 30:
+    if total_games - max_games < 8:
         # finish line
-        ax.axvline(38, color="grey", linestyle="--", linewidth=1)
-        ax.set_xlim(x_start, 38.5)
+        ax.axvline(total_games, color="grey", linestyle="--", linewidth=1)
+        ax.set_xlim(x_start, total_games + 0.5)
     else:
         ax.set_xlim(x_start, max_games + 0.5)
 
@@ -277,7 +354,9 @@ def plot_cumulative_points(
             weight="bold",
             family=fontfamily,
             color=style[team][1],
-            backgroundcolor=(highlight_color if team == highlight else style[team][0]),
+            backgroundcolor=(
+                highlight_color if team == highlight else style[team][0]
+            ),
         )
 
         xs = [games_played[team] - 0.75, legend_xloc]
@@ -331,7 +410,7 @@ def plot_cumulative_points(
         linestyle=":",
         alpha=2 / 3,
     )
-    set_ax_limits(ax, max_games)
+    set_ax_limits(ax, max_games, data["total_games"])
     ax.set_ylim(-1, max_points + 1)
     ax.set_xlabel("Games Played")
     ax.set_ylabel("Points")
@@ -416,7 +495,9 @@ def plot_positions(
             weight="bold",
             family=fontfamily,
             color=style[team][1],
-            backgroundcolor=(highlight_color if team == highlight else style[team][0]),
+            backgroundcolor=(
+                highlight_color if team == highlight else style[team][0]
+            ),
         )
 
         xs = [games_played[team] - 0.75, legend_xloc]
@@ -474,7 +555,7 @@ def plot_positions(
     ax.set_xlabel("Games Played")
     ax.set_ylabel("Position")
 
-    set_ax_limits(ax, max_games)
+    set_ax_limits(ax, max_games, data["total_games"])
     ax.set_ylim(-0.5, 19.5)
     ax.set_yticks([])
 
@@ -542,7 +623,9 @@ def plot_relative_performance(
             weight="bold",
             family=fontfamily,
             color=style[team][1],
-            backgroundcolor=(highlight_color if team == highlight else style[team][0]),
+            backgroundcolor=(
+                highlight_color if team == highlight else style[team][0]
+            ),
         )
 
         xs = [games_played[team] - 0.75, legend_xloc]
@@ -600,7 +683,7 @@ def plot_relative_performance(
     ax.set_xlabel("Games Played")
     ax.set_ylabel("Relative points")
 
-    set_ax_limits(ax, max_games)
+    set_ax_limits(ax, max_games, data["total_games"])
     ax.set_ylim(-0.02, 1.02)
 
 
@@ -616,7 +699,9 @@ def plot_extrapolated_performance(
     games_played = data["games_played"]
     max_games = data["max_games"]
     extrap_points = {
-        team: 114 * cumpoints[team][1:] / (3 * np.arange(1, games_played[team]))
+        team: 114
+        * cumpoints[team][1:]
+        / (3 * np.arange(1, games_played[team]))
         for team in ranked_teams
     }
     ranked_teams.sort(key=lambda team: extrap_points[team][-1])
@@ -656,7 +741,7 @@ def plot_extrapolated_performance(
 
     for team in ranked_teams:
         legend_xloc = games_played[team] * 1.05
-        legend_yloc = 3 * 38 * places[team] / 19
+        legend_yloc = 3 * data["total_games"] * places[team] / 19
 
         ax.text(
             legend_xloc,
@@ -667,7 +752,9 @@ def plot_extrapolated_performance(
             weight="bold",
             family=fontfamily,
             color=style[team][1],
-            backgroundcolor=(highlight_color if team == highlight else style[team][0]),
+            backgroundcolor=(
+                highlight_color if team == highlight else style[team][0]
+            ),
         )
 
         xs = [games_played[team] - 0.75, legend_xloc]
@@ -720,7 +807,7 @@ def plot_extrapolated_performance(
         alpha=2 / 3,
     )
 
-    set_ax_limits(ax, max_games, x_start=0.5)
+    set_ax_limits(ax, max_games, data["total_games"], x_start=0.5)
     ax.set_xlabel("Games Played")
     ax.set_ylabel("Extrapolated Points")
     ax.set_ylim(-2, 117)
@@ -739,7 +826,9 @@ def exponential_form(points, window_size=5):
             # start all teams on average form
             f_prev = 1.5
 
-        form.append(((window_size - 1) / window_size) * f_prev + (1 / window_size) * p)
+        form.append(
+            ((window_size - 1) / window_size) * f_prev + (1 / window_size) * p
+        )
     return form
 
 
@@ -809,7 +898,9 @@ def plot_form(
             weight="bold",
             family=fontfamily,
             color=style[team][1],
-            backgroundcolor=(highlight_color if team == highlight else style[team][0]),
+            backgroundcolor=(
+                highlight_color if team == highlight else style[team][0]
+            ),
         )
 
         xs = [games_played[team] - 0.75, legend_xloc]
@@ -887,17 +978,40 @@ def plot_form(
         alpha=2 / 3,
     )
 
-    set_ax_limits(ax, max_games, x_start=0.5)
+    set_ax_limits(ax, max_games, data["total_games"], x_start=0.5)
     ax.set_xlabel("Games Played")
     ax.set_ylabel("Average points per game")
     ax.set_ylim(-0.1, 3.1)
 
 
-def autoplot(year=2023, which="cumulative", highlight=None, **kwargs):
-    import pathlib
+def download_file_content(url):
+    import requests
+
+    response = requests.get(url)
+    response.raise_for_status()  # Ensure we got a successful response
+    return response.text
+
+
+@functools.lru_cache
+def get_footballdata(year, league="E0"):
+    return download_file_content(
+        "https://www.football-data.co.uk/mmz4281/"
+        f"{year[-2:]}{str(int(year) + 1)[-2:]}/{league}.csv"
+    )
+
+
+def autoplot(
+    year=2023,
+    which="cumulative",
+    highlight=None,
+    source="footballdata",
+    league="E0",
+    **kwargs
+):
+    # import pathlib
 
     year = str(year)
-    if year == "2023":
+    if (year == "2023") and (league == "E0"):
         penalties = {
             "Everton": 6,
             "Nottingham Forest": 4,
@@ -905,13 +1019,28 @@ def autoplot(year=2023, which="cumulative", highlight=None, **kwargs):
     else:
         penalties = None
 
-    fname = pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv"
+    # if source == "fixturedownload":
+    #     fname = pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv"
+    # elif source == "footballdata":
+    #     fname = pathlib.Path(__file__).parent / f"data/E0-{year}.csv"
+    # else:
+    #     raise ValueError(f"Unknown data source {source}")
+
+    # with open(fname, "r") as f:
+    #     contents = f.read()
+
+    contents = get_footballdata(year=year, league=league)
+
+    if source == "fixturedownload":
+        data = parse_fixturedownload_data(contents)
+    elif source == "footballdata":
+        data = parse_footballdata_data(contents)
+    data = compute_cumulative_quantities(data, penalties=penalties)
 
     with mpl.style.context(NEUTRAL_STYLE):
-        data = process_data(fname, penalties=penalties)
 
         height = 7
-        width = 12 * (data["max_games"] / 38) ** 0.5
+        width = 12 * (data["max_games"] / data["total_games"]) ** 0.5
 
         if which == "cumulative":
             fn = plot_cumulative_points
