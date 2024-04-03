@@ -6,30 +6,30 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'proggyleg'
-copyright = '2024, Johnnie Gray'
-author = 'Johnnie Gray'
-release = '0.1.0'
+project = "proggyleg"
+copyright = "2024, Johnnie Gray"
+author = "Johnnie Gray"
+release = "0.1.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = []
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 extensions = [
-    'myst_nb',
+    "myst_nb",
 ]
 
 # msyt_nb configuration
-nb_execution_mode = "auto"
+nb_execution_mode = "off"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'furo'
+html_theme = "furo"
 html_theme_options = {
     "light_css_variables": {
         "color-brand-primary": "hsl(144, 80%, 30%)",
@@ -41,5 +41,5 @@ html_theme_options = {
     },
 }
 
-html_static_path = ['_static']
+html_static_path = ["_static"]
 html_css_files = ["my-styles.css"]
