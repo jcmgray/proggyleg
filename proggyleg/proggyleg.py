@@ -44,6 +44,7 @@ def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
         "E0": "Premier League",
         "E1": "Championship",
         "D1": "Bundesliga",
+        "I1": "Serie A",
     }
 
     if dynamic == "auto":
@@ -191,16 +192,16 @@ style["Bristol City"] = ("#e3131e", "#ffffff", "$B$")
 style["Burnley"] = ("#6C1D45", "#ede939", "$B$")
 style["Burton"] = ("#fffa05", "#000000", "$B$")
 style["Cardiff"] = ("#0070B5", "#D11524", "$C$")
-style["Charlton"] = ("#000000", "#d4021d", "$C$")
+style["Charlton"] = ("#0f0f0f", "#d4021d", "$C$")
 style["Chelsea"] = ("#034694", "#DBA111", "$C$")
 style["Colchester"] = ("#0066a6", "#fcb23e", "$C$")
 style["Coventry"] = ("#87beef", "#cbd7de", "$C$")
 style["Crewe"] = ("#fafafa", "#d62818", "$C$")
 style["Crystal Palace"] = ("#1B458F", "#C4122E", "$C$")
-style["Derby"] = ("#000000", "#FFFFFF", "$D$")
+style["Derby"] = ("#0f0f0f", "#FFFFFF", "$D$")
 style["Doncaster"] = ("#d81e20", "#121212", "$D$")
 style["Everton"] = ("#003399", "#FFFFFF", "$E$")
-style["Fulham"] = ("#000000", "#CC0000", "$F$")
+style["Fulham"] = ("#0f0f0f", "#CC0000", "$F$")
 style["Gillingham"] = ("#1d191a", "#135daf", "$G$")
 style["Huddersfield"] = ("#0E63AD", "#FFFFFF", "$H$")
 style["Hull"] = ("#F18A01", "#000000", "$H$")
@@ -233,7 +234,7 @@ style["Southampton"] = ("#D71920", "#130C0E", "$S$")
 style["Southend"] = ("#003781", "#ffffff", "$S$")
 style["Stoke"] = ("#E03A3E", "#1B449C", "$S$")
 style["Sunderland"] = ("#eb172b", "#211e1e", "$S$")
-style["Swansea"] = ("#000000", "#FFFFFF", "$S$")
+style["Swansea"] = ("#0f0f0f", "#FFFFFF", "$S$")
 style["Swindon"] = ("#dd0e14", "#b58e00", "$S$")
 style["Tottenham"] = ("#132257", "#FFFFFF", "$T$")
 style["Watford"] = ("#FBEE23", "#ED2127", "$W$")
@@ -247,7 +248,7 @@ style["Yeovil"] = ("#4cad21", "#ffff00", "$Y$")
 
 
 # Germany
-style["Aachen"] = ("#000000", "#ffde00", "$A$")
+style["Aachen"] = ("#0f0f0f", "#ffde00", "$A$")
 style["Augsburg"] = ("#bb342f", "#44724c", "$A$")
 style["Bayern Munich"] = ("#dd0029", "#0066b3", "$B$")
 style["Bielefeld"] = ("#005c9e", "#000100", "$B$")
@@ -256,7 +257,7 @@ style["Cottbus"] = ("#ff0000", "#ffffff", "$C$")
 style["Darmstadt"] = ("#004ea0", "#ffffff", "$D$")
 style["Dortmund"] = ("#ffda00", "#000000", "$D$")
 style["Duisburg"] = ("#1f326e", "#ffffff", "$D$")
-style["Ein Frankfurt"] = ("#000000", "#ff0000", "$E$")
+style["Ein Frankfurt"] = ("#0f0f0f", "#ff0000", "$E$")
 style["FC Koln"] = ("#fbfbfb", "#fb0000", "$F$")
 style["Fortuna Dusseldorf"] = ("#e40008", "#ffffff", "$F$")
 style["Freiburg"] = ("#ff0000", "#000000", "$F$")
@@ -272,10 +273,10 @@ style["Kaiserslautern"] = ("#e40008", "#ffffff", "$K$")
 style["Karlsruhe"] = ("#004b95", "#ffffff", "$K$")
 style["Leverkusen"] = ("#141115", "#e32221", "$L$")
 style["Mainz"] = ("#ff0000", "#f2f2f2", "$M$")
-style["Mönchengladbach"] = ("#000000", "#008b43", "$M$")
+style["Mönchengladbach"] = ("#0f0f0f", "#008b43", "$M$")
 style["Munich 1860"] = ("#78bcff", "#ffffff", "$M$")
-style["Nurnberg"] = ("#000000", "#ac081f", "$N$")
-style["Paderborn"] = ("#000000", "#005caa", "$P$")
+style["Nurnberg"] = ("#0f0f0f", "#ac081f", "$N$")
+style["Paderborn"] = ("#0f0f0f", "#005caa", "$P$")
 style["RB Leipzig"] = ("#de013f", "#001945", "$R$")
 style["Schalke 04"] = ("#004a9d", "#ffffff", "$S$")
 style["St Pauli"] = ("#624636", "#e4010b", "$S$")
@@ -284,6 +285,31 @@ style["Union Berlin"] = ("#ec121d", "#fddd00", "$U$")
 style["Unterhaching"] = ("#ee1b21", "#3aa0db", "$U$")
 style["Werder Bremen"] = ("#169152", "#ffffff", "$W$")
 style["Wolfsburg"] = ("#51a700", "#f8f9fa", "$W$")
+
+# Italy
+style["Salernitana"] = ("#68130a", "#c49a29", "$S$")
+style["Sassuolo"] = ("#2fb75b", "#1d191a", "$S$")
+style["Empoli"] = ("#0055ff", "#15134b", "$E$")
+style["Frosinone"] = ("#ffe500", "#006ab5", "$F$")
+style["Cagliari"] = ("#282846", "#d10125", "$C$")
+style["Verona"] = ("#002b6c", "#fee21d", "$V$")
+style["Udinese"] = ("#808080", "#000000", "$U$")
+style["Lecce"] = ("#ffee00", "#e30013", "$L$")
+style["Genoa"] = ("#b01212", "#00213c", "$G$")
+style["Monza"] = ("#ee0e36", "#ffffff", "$M$")
+style["Fiorentina"] = ("#61328c", "#de2e1f", "$F$")
+style["Torino"] = ("#800000", "#f5f5dc", "$T$")
+style["Napoli"] = ("#12a0d7", "#003c82", "$N$")
+style["Lazio"] = ("#86d9f8", "#d9aa00", "$L$")
+style["Atalanta"] = ("#1d191a", "#295cb0", "$A$")
+style["Roma"] = ("#980228", "#fbbb00", "$R$")
+style["Bologna"] = ("#04043d", "#d50e0e", "$B$")
+style["Juventus"] = ("#0f0f0f", "#efefef", "$J$")
+style["Milan"] = ("#0f0f0f", "#e50027", "$M$")
+style["Inter"] = ("#0f0f0f", "#001d9d", "$I$")
+style["Sampdoria"] = ("#007abc", "#dd3214", "$S$")
+style["Cremonese"] = ("#ee151f", "#818386", "$C$")
+style["Spezia"] = ("#ebebeb", "#000000", "$S$")
 
 team_aliases = {
     "Man United": "Man Utd",
@@ -541,6 +567,10 @@ _SPANS = {
         ("Relegation", 1, (0.3, 0.6, 0.0)),
         ("Playoff", 2, (0.3, 0.6, 0.0)),
     ],
+    "I1": [
+        ("Champions League", -4, (0.0, 0.6, 0.3)),
+        ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
 }
 
 
@@ -567,6 +597,7 @@ def plot_spans(
             ha="right",
             color=color,
             family=fontfamily,
+            fontsize=8,
         )
         ax.plot(
             [0, max_games],

@@ -21,6 +21,12 @@ index_bundesliga
 ```
 
 ```{toctree}
+:maxdepth: 2
+
+index_serie_a
+```
+
+```{toctree}
 :caption: Development
 :hidden:
 
