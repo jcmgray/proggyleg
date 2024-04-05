@@ -36,11 +36,219 @@ def update_data(year=2023, source="footballdata"):
     urllib.request.urlretrieve(url, target)
 
 
+def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
+    import pathlib
+    import nbformat as nbf
+
+    fullnames = {
+        "E0": "Premier League",
+        "E1": "Championship",
+        "D1": "Bundesliga",
+    }
+
+    if dynamic == "auto":
+        dynamic = year == 2023
+
+    filename = (
+        pathlib.Path(__file__).parent.parent
+        / "docs"
+        / league
+        / f"{year}.ipynb"
+    ).resolve()
+
+    cells = []
+    cells.append(
+        nbf.v4.new_markdown_cell(
+            "\n".join(
+                (
+                    f"# {year} / {year + 1}",
+                    "",
+                    f"Progress points for the {fullnames[league]} "
+                    f"{year} / {year + 1} season.",
+                )
+            )
+        )
+    )
+    cells.append(
+        nbf.v4.new_code_cell(
+            "\n".join(
+                (
+                    "%config InlineBackend.figure_formats = ['svg']",
+                    "from proggyleg import proggyleg",
+                    f"year = {year}",
+                    f'league = "{league}"',
+                )
+            )
+        )
+    )
+    cells.append(
+        nbf.v4.new_markdown_cell(
+            "\n".join(
+                (
+                    "## Cumulative Points",
+                    "",
+                    "The sum of points up to a given game played.",
+                )
+            )
+        )
+    )
+    cells.append(
+        nbf.v4.new_code_cell(
+            "\n".join(
+                ('proggyleg.autoplot(year, league, which="cumulative");',)
+            )
+        )
+    )
+    cells.append(
+        nbf.v4.new_markdown_cell(
+            "\n".join(
+                (
+                    "## Extrapolated Points",
+                    "",
+                    "Final points assuming each team continues to score "
+                    "points at the same rate as they have so far.",
+                )
+            )
+        )
+    )
+    cells.append(
+        nbf.v4.new_code_cell(
+            "\n".join(
+                ('proggyleg.autoplot(year, league, which="extrapolated");',)
+            )
+        )
+    )
+    cells.append(nbf.v4.new_markdown_cell("\n".join(("## Position",))))
+    cells.append(
+        nbf.v4.new_code_cell(
+            "\n".join(('proggyleg.autoplot(year, league, which="position");',))
+        )
+    )
+    cells.append(
+        nbf.v4.new_markdown_cell(
+            "\n".join(
+                (
+                    "## Rolling Form",
+                    "",
+                    "Exponential weighted moving "
+                    "average of points won per game.",
+                )
+            )
+        )
+    )
+    cells.append(
+        nbf.v4.new_code_cell(
+            "\n".join(('proggyleg.autoplot(year, league, which="form");',))
+        )
+    )
+    nb = nbf.v4.new_notebook()
+    nb["cells"] = cells
+    nb["metadata"]["mystnb"] = {
+        "execution_mode": "force" if dynamic else "off",
+    }
+    nbf.write(nb, filename)
+
+
+def execute_notebook_doc(year, league):
+    import subprocess
+
+    filename = str(
+        (
+            pathlib.Path(__file__).parent.parent
+            / "docs"
+            / league
+            / f"{year}.ipynb"
+        ).resolve()
+    )
+    command = [
+        "jupyter",
+        "nbconvert",
+        "--to",
+        "notebook",
+        "--execute",
+        "--inplace",
+        filename,
+    ]
+    subprocess.run(command, check=True)
+
+
+style = collections.defaultdict(lambda: ("grey", "white", "o"))
+style["Arsenal"] = ("#EF0107", "#FFFFFF", "$A$")
+style["Aston Villa"] = ("#95BFE5", "#670E36", "$A$")
+style["Barnsley"] = ("#a80409", "#e1e3e3", "$B$")
+style["Birmingham"] = ("#183b90", "#FFFFFF", "$B$")
+style["Blackburn"] = ("#009EE0", "#FFFFFF", "$B$")
+style["Blackpool"] = ("#F68712", "#FFFFFF", "$B$")
+style["Bolton"] = ("#263c7e", "#c80024", "$B$")
+style["Bournemouth"] = ("#DA291C", "#000000", "$B$")
+style["Bradford"] = ("#ffbf00", "#800000", "$B$")
+style["Brentford"] = ("#e30613", "#fbb800", "$B$")
+style["Brighton"] = ("#0057B8", "#FFCD00", "$B$")
+style["Bristol City"] = ("#e3131e", "#ffffff", "$B$")
+style["Burnley"] = ("#6C1D45", "#ede939", "$B$")
+style["Burton"] = ("#fffa05", "#000000", "$B$")
+style["Cardiff"] = ("#0070B5", "#D11524", "$C$")
+style["Charlton"] = ("#000000", "#d4021d", "$C$")
+style["Chelsea"] = ("#034694", "#DBA111", "$C$")
+style["Colchester"] = ("#0066a6", "#fcb23e", "$C$")
+style["Coventry"] = ("#87beef", "#cbd7de", "$C$")
+style["Crewe"] = ("#ffffff", "#d62818", "$C$")
+style["Crystal Palace"] = ("#1B458F", "#C4122E", "$C$")
+style["Derby"] = ("#000000", "#FFFFFF", "$D$")
+style["Doncaster"] = ("#d81e20", "#121212", "$D$")
+style["Everton"] = ("#003399", "#FFFFFF", "$E$")
+style["Fulham"] = ("#000000", "#CC0000", "$F$")
+style["Gillingham"] = ("#1d191a", "#135daf", "$G$")
+style["Huddersfield"] = ("#0E63AD", "#FFFFFF", "$H$")
+style["Hull"] = ("#F18A01", "#000000", "$H$")
+style["Ipswich"] = ("#3764a4", "#df2834", "$I$")
+style["Leeds"] = ("#ffe100", "#0060aa", "$L$")
+style["Leicester"] = ("#003090", "#FDBE11", "$L$")
+style["Liverpool"] = ("#C8102E", "#00B2A9", "$L$")
+style["Luton"] = ("#002e62", "#fb861f", "$L$")
+style["Man City"] = ("#6CABDD", "#1C2C5B", "$M$")
+style["Man Utd"] = ("#DA020E", "#FBE122", "$M$")
+style["Middlesbrough"] = ("#DE1B22", "#FFFFFF", "$M$")
+style["Millwall"] = ("#00337b", "#90a4a3", "$M$")
+style["Milton Keynes"] = ("#ffffff", "#e71825", "$M$")
+style["Newcastle"] = ("#241F20", "#FFFFFF", "$N$")
+style["Norwich"] = ("#00A650", "#FFF200", "$N$")
+style["Nottingham Forest"] = ("#DD0000", "#FFFFFF", "$N$")
+style["Oldham"] = ("#004998", "#ffffff", "$O$")
+style["Peterboro"] = ("#0067b5", "#a6c3dc", "$P$")
+style["Plymouth"] = ("#003c2b", "#d5a44d", "$P$")
+style["Portsmouth"] = ("#001489", "#fbfdff", "$P$")
+style["Preston"] = ("#f4f4f4", "#000055", "$P$")
+style["QPR"] = ("#175ba5", "#ffffff", "$Q$")
+style["QRP"] = ("#1D5BA4", "#FFFFFF", "$Q$")
+style["Reading"] = ("#004494", "#FFFFFF", "$R$")
+style["Rotherham"] = ("#e31720", "#ffffff", "$R$")
+style["Scunthorpe"] = ("#aa2e47", "#00adde", "$S$")
+style["Sheffield Utd"] = ("#EE2737", "#000000", "$S$")
+style["Sheffield Weds"] = ("#4482d0", "#eab202", "$S$")
+style["Southampton"] = ("#D71920", "#130C0E", "$S$")
+style["Southend"] = ("#003781", "#ffffff", "$S$")
+style["Stoke"] = ("#E03A3E", "#1B449C", "$S$")
+style["Sunderland"] = ("#eb172b", "#211e1e", "$S$")
+style["Swansea"] = ("#000000", "#FFFFFF", "$S$")
+style["Swindon"] = ("#dd0e14", "#b58e00", "$S$")
+style["Tottenham"] = ("#132257", "#FFFFFF", "$T$")
+style["Watford"] = ("#FBEE23", "#ED2127", "$W$")
+style["West Brom"] = ("#122F67", "#FFFFFF", "$W$")
+style["West Ham"] = ("#7A263A", "#1BB1E7", "$W$")
+style["Wigan"] = ("#1d59af", "#FFFFFF", "$W$")
+style["Wimbledon"] = ("#034bd4", "#ffff00", "$W$")
+style["Wolves"] = ("#FDB913", "#231F20", "$W$")
+style["Wycombe"] = ("#002f62", "#4db7e4", "$W$")
+style["Yeovil"] = ("#4cad21", "#ffff00", "$Y$")
+
+
 team_aliases = {
     "Man United": "Man Utd",
     "Spurs": "Tottenham",
     "Nott'm Forest": "Nottingham Forest",
     "Sheffield United": "Sheffield Utd",
+    "Milton Keynes Dons": "Milton Keynes",
 }
 
 
@@ -103,7 +311,7 @@ def parse_footballdata_data(contents):
     return data
 
 
-def compute_cumulative_quantities(data, penalties=None):
+def compute_cumulative_quantities(data, penalties=None, league="E0"):
     penalties = penalties or {}
 
     points = {}
@@ -188,66 +396,8 @@ def compute_cumulative_quantities(data, penalties=None):
         "ranked_teams": ranked_teams,
         "teams": teams,
         "total_games": 2 * (len(teams) - 1),
+        "league": league,
     }
-
-
-style = collections.defaultdict(lambda: ("grey", "white", "o"))
-style["Arsenal"] = ("#EF0107", "#FFFFFF", "$A$")
-style["Aston Villa"] = ("#95BFE5", "#670E36", "$A$")
-style["Birmingham"] = ("#183b90", "#FFFFFF", "$B$")
-style["Blackburn"] = ("#009EE0", "#FFFFFF", "$B$")
-style["Blackpool"] = ("#F68712", "#FFFFFF", "$B$")
-style["Bolton"] = ("#263c7e", "#c80024", "$B$")
-style["Bournemouth"] = ("#DA291C", "#000000", "$B$")
-style["Bradford"] = ("#ffbf00", "#800000", "$B$")
-style["Brentford"] = ("#e30613", "#fbb800", "$B$")
-style["Brighton"] = ("#0057B8", "#FFCD00", "$B$")
-style["Bristol City"] = ('#e3131e', '#ffffff', "$B$")
-style["Burnley"] = ("#6C1D45", "#ede939", "$B$")
-style["Cardiff"] = ("#0070B5", "#D11524", "$C$")
-style["Charlton"] = ("#000000", "#d4021d", "$C$")
-style["Chelsea"] = ("#034694", "#DBA111", "$C$")
-style["Coventry"] = ("#87beef", "#cbd7de", "$C$")
-style["Crystal Palace"] = ("#1B458F", "#C4122E", "$C$")
-style["Derby"] = ("#000000", "#FFFFFF", "$D$")
-style["Everton"] = ("#003399", "#FFFFFF", "$E$")
-style["Fulham"] = ("#000000", "#CC0000", "$F$")
-style["Huddersfield"] = ("#0E63AD", "#FFFFFF", "$H$")
-style["Hull"] = ("#F18A01", "#000000", "$H$")
-style["Ipswich"] = ("#3764a4", "#df2834", "$I$")
-style["Leeds"] = ("#ffe100", "#0060aa", "$L$")
-style["Leicester"] = ("#003090", "#FDBE11", "$L$")
-style["Liverpool"] = ("#C8102E", "#00B2A9", "$L$")
-style["Luton"] = ("#002e62", "#fb861f", "$L$")
-style["Man City"] = ("#6CABDD", "#1C2C5B", "$M$")
-style["Man Utd"] = ("#DA020E", "#FBE122", "$M$")
-style["Middlesbrough"] = ("#DE1B22", "#FFFFFF", "$M$")
-style["Millwall"] = ('#00337b', '#90a4a3', "$M$")
-style["Newcastle"] = ("#241F20", "#FFFFFF", "$N$")
-style["Norwich"] = ("#00A650", "#FFF200", "$N$")
-style["Nottingham Forest"] = ("#DD0000", "#FFFFFF", "$N$")
-style["Oldham"] = ("#004998", "#ffffff", "$O$")
-style["Plymouth"] = ('#003c2b', '#d5a44d', "$P$")
-style["Portsmouth"] = ("#001489", "#fbfdff", "$P$")
-style["Preston"] = ('#f4f4f4', '#000055', "$P$")
-style["QPR"] = ("#175ba5", "#ffffff", "$Q$")
-style["QRP"] = ("#1D5BA4", "#FFFFFF", "$Q$")
-style["Reading"] = ("#004494", "#FFFFFF", "$R$")
-style["Rotherham"] = ('#e31720', '#ffffff', "$R$")
-style["Sheffield Utd"] = ("#EE2737", "#000000", "$S$")
-style["Sheffield Weds"] = ("#4482d0", "#eab202", "$S$")
-style["Southampton"] = ("#D71920", "#130C0E", "$S$")
-style["Stoke"] = ("#E03A3E", "#1B449C", "$S$")
-style["Sunderland"] = ("#eb172b", "#211e1e", "$S$")
-style["Swansea"] = ("#000000", "#FFFFFF", "$S$")
-style["Swindon"] = ("#dd0e14", "#b58e00", "$S$")
-style["Tottenham"] = ("#132257", "#FFFFFF", "$T$")
-style["Watford"] = ("#FBEE23", "#ED2127", "$W$")
-style["West Brom"] = ("#122F67", "#FFFFFF", "$W$")
-style["West Ham"] = ("#7A263A", "#1BB1E7", "$W$")
-style["Wigan"] = ("#1d59af", "#FFFFFF", "$W$")
-style["Wimbledon"] = ("#034bd4", "#ffff00", "$W$")
-style["Wolves"] = ("#FDB913", "#231F20", "$W$")
 
 
 fontfamily = "monospace"
@@ -306,6 +456,49 @@ def set_ax_limits(ax, max_games, total_games, x_start=-0.5):
         ax.set_xlim(x_start, max_games + 0.5)
 
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+
+_SPANS = {
+    "E0": [
+        ("Champions League", 16, (0.0, 0.6, 0.3)),
+        ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
+    "E1": [
+        ("Automatic", 22, (0.0, 0.6, 0.3)),
+        ("Playoffs", 18, (0.3, 0.6, 0.0)),
+        ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
+}
+
+
+def plot_spans(
+    ax,
+    ys,
+    max_games,
+    league="E0",
+):
+    spans = _SPANS.get(league, None)
+    if spans is None:
+        return
+
+    for label, pos, color in spans:
+        ax.text(
+            0,
+            ys[pos],
+            label,
+            va="bottom",
+            ha="right",
+            color=color,
+            family=fontfamily,
+        )
+        ax.plot(
+            [0, max_games],
+            [ys[pos]] * 2,
+            zorder=-10,
+            color=color,
+            linestyle=":",
+            alpha=2 / 3,
+        )
 
 
 @setup_and_handle_figure
@@ -375,45 +568,13 @@ def plot_cumulative_points(
             clip_on=False,
         )
 
-    current_points_relegation = current_points[ranked_teams[2]]
-    relegation_color = (0.3, 0.6, 0.0)
-    ax.text(
-        0,
-        current_points_relegation,
-        "Relegation",
-        va="bottom",
-        ha="right",
-        color=relegation_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [current_points_relegation] * 2,
-        zorder=-10,
-        color=relegation_color,
-        linestyle=":",
-        alpha=2 / 3,
+    plot_spans(
+        ax,
+        [current_points[team] for team in ranked_teams],
+        max_games,
+        league=data["league"],
     )
 
-    current_points_champs = current_points[ranked_teams[16]]
-    champs_color = (0.0, 0.6, 0.3)
-    ax.text(
-        0,
-        current_points_champs,
-        "Champions League",
-        va="bottom",
-        ha="right",
-        color=champs_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [current_points_champs] * 2,
-        zorder=-10,
-        color=champs_color,
-        linestyle=":",
-        alpha=2 / 3,
-    )
     set_ax_limits(ax, max_games, data["total_games"])
     ax.set_ylim(-1, max_points + 1)
     ax.set_xlabel("Games Played")
@@ -516,44 +677,12 @@ def plot_positions(
             clip_on=False,
         )
 
-    current_pos_relegation = 2.5
-    relegation_color = (0.3, 0.6, 0.0)
-    ax.text(
-        -1,
-        current_pos_relegation,
-        "Relegation",
-        va="bottom",
-        ha="right",
-        color=relegation_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [current_pos_relegation] * 2,
-        zorder=-10,
-        color=relegation_color,
-        linestyle=":",
-        alpha=2 / 3,
-    )
-
-    current_pos_champs = 15.5
-    champs_color = (0.0, 0.6, 0.3)
-    ax.text(
-        -1,
-        current_pos_champs,
-        "Champions League",
-        va="bottom",
-        ha="right",
-        color=champs_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [current_pos_champs] * 2,
-        zorder=-10,
-        color=champs_color,
-        linestyle=":",
-        alpha=2 / 3,
+    plot_spans(
+        ax,
+        # want relegation lines to appear above
+        [i + 0.5 if i <= 3 else i - 0.5 for i in range(data["num_teams"])],
+        max_games,
+        league=data["league"],
     )
 
     ax.set_xlabel("Games Played")
@@ -644,44 +773,11 @@ def plot_relative_performance(
             clip_on=False,
         )
 
-    current_points_relegation = current_points[ranked_teams[2]] / best_pts[-1]
-    relegation_color = (0.3, 0.6, 0.0)
-    ax.text(
-        0,
-        current_points_relegation,
-        "Relegation",
-        va="bottom",
-        ha="right",
-        color=relegation_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [current_points_relegation] * 2,
-        zorder=-10,
-        color=relegation_color,
-        linestyle=":",
-        alpha=2 / 3,
-    )
-
-    current_points_champs = current_points[ranked_teams[16]] / best_pts[-1]
-    champs_color = (0.0, 0.6, 0.3)
-    ax.text(
-        0,
-        current_points_champs,
-        "Champions League",
-        va="bottom",
-        ha="right",
-        color=champs_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [current_points_champs] * 2,
-        zorder=-10,
-        color=champs_color,
-        linestyle=":",
-        alpha=2 / 3,
+    plot_spans(
+        ax,
+        [current_points[team] / best_pts[-1] for team in ranked_teams],
+        max_games,
+        league=data["league"],
     )
 
     ax.set_xlabel("Games Played")
@@ -715,11 +811,6 @@ def plot_extrapolated_performance(
     for i, team in enumerate(ranked_teams):
         xs = np.arange(1, games_played[team])
         ys = extrap_points[team]
-
-        if i == 2:
-            abs_perf_relegation = ys[-1]
-        if i == 16:
-            abs_perf_champs = ys[-1]
 
         ax.plot(
             xs,
@@ -776,42 +867,11 @@ def plot_extrapolated_performance(
             clip_on=False,
         )
 
-    relegation_color = (0.3, 0.6, 0.0)
-    ax.text(
-        0,
-        abs_perf_relegation,
-        "Relegation",
-        va="bottom",
-        ha="right",
-        color=relegation_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [abs_perf_relegation] * 2,
-        zorder=-10,
-        color=relegation_color,
-        linestyle=":",
-        alpha=2 / 3,
-    )
-
-    champs_color = (0.0, 0.6, 0.3)
-    ax.text(
-        0,
-        abs_perf_champs,
-        "Champions League",
-        va="bottom",
-        ha="right",
-        color=champs_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0, max_games],
-        [abs_perf_champs] * 2,
-        zorder=-10,
-        color=champs_color,
-        linestyle=":",
-        alpha=2 / 3,
+    plot_spans(
+        ax,
+        [extrap_points[team][-1] for team in ranked_teams],
+        max_games,
+        league=data["league"],
     )
 
     set_ax_limits(ax, max_games, data["total_games"], x_start=0.5)
@@ -922,48 +982,6 @@ def plot_form(
             clip_on=False,
         )
 
-    team = ranked_teams[2]
-    form_relegation = current_points[team] / games_played[team]
-    relegation_color = (0.3, 0.6, 0.0)
-    ax.text(
-        0.0,
-        form_relegation,
-        "Relegation",
-        va="bottom",
-        ha="right",
-        color=relegation_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0.5, max_games],
-        [form_relegation] * 2,
-        zorder=-10,
-        color=relegation_color,
-        linestyle=":",
-        alpha=2 / 3,
-    )
-
-    team = ranked_teams[16]
-    form_champs = current_points[team] / games_played[team]
-    champs_color = (0.0, 0.6, 0.3)
-    ax.text(
-        0.0,
-        form_champs,
-        "Champions League",
-        va="bottom",
-        ha="right",
-        color=champs_color,
-        family=fontfamily,
-    )
-    ax.plot(
-        [0.5, max_games],
-        [form_champs] * 2,
-        zorder=-10,
-        color=champs_color,
-        linestyle=":",
-        alpha=2 / 3,
-    )
-
     team = ranked_teams[-1]
     form_winning = current_points[team] / games_played[team]
     champs_color = (0.0, 0.5, 0.4)
@@ -1042,10 +1060,13 @@ def autoplot(
         data = parse_fixturedownload_data(contents)
     elif source == "footballdata":
         data = parse_footballdata_data(contents)
-    data = compute_cumulative_quantities(data, penalties=penalties)
+
+    data = compute_cumulative_quantities(
+        data, penalties=penalties, league=league
+    )
 
     with mpl.style.context(NEUTRAL_STYLE):
-        height = 7
+        height = 7 * (data["num_teams"] / 20) ** 0.5
         width = 12 * (data["max_games"] / data["total_games"]) ** 0.5
 
         if which == "cumulative":
