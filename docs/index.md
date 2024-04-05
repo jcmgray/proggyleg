@@ -15,6 +15,12 @@ index_championship
 ```
 
 ```{toctree}
+:maxdepth: 2
+
+index_bundesliga
+```
+
+```{toctree}
 :caption: Development
 :hidden:
 

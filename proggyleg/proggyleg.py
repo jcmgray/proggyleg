@@ -173,6 +173,9 @@ def execute_notebook_doc(year, league):
 
 
 style = collections.defaultdict(lambda: ("grey", "white", "o"))
+
+
+# England
 style["Arsenal"] = ("#EF0107", "#FFFFFF", "$A$")
 style["Aston Villa"] = ("#95BFE5", "#670E36", "$A$")
 style["Barnsley"] = ("#a80409", "#e1e3e3", "$B$")
@@ -192,7 +195,7 @@ style["Charlton"] = ("#000000", "#d4021d", "$C$")
 style["Chelsea"] = ("#034694", "#DBA111", "$C$")
 style["Colchester"] = ("#0066a6", "#fcb23e", "$C$")
 style["Coventry"] = ("#87beef", "#cbd7de", "$C$")
-style["Crewe"] = ("#ffffff", "#d62818", "$C$")
+style["Crewe"] = ("#fafafa", "#d62818", "$C$")
 style["Crystal Palace"] = ("#1B458F", "#C4122E", "$C$")
 style["Derby"] = ("#000000", "#FFFFFF", "$D$")
 style["Doncaster"] = ("#d81e20", "#121212", "$D$")
@@ -210,7 +213,7 @@ style["Man City"] = ("#6CABDD", "#1C2C5B", "$M$")
 style["Man Utd"] = ("#DA020E", "#FBE122", "$M$")
 style["Middlesbrough"] = ("#DE1B22", "#FFFFFF", "$M$")
 style["Millwall"] = ("#00337b", "#90a4a3", "$M$")
-style["Milton Keynes"] = ("#ffffff", "#e71825", "$M$")
+style["Milton Keynes"] = ("#fafafa", "#e71825", "$M$")
 style["Newcastle"] = ("#241F20", "#FFFFFF", "$N$")
 style["Norwich"] = ("#00A650", "#FFF200", "$N$")
 style["Nottingham Forest"] = ("#DD0000", "#FFFFFF", "$N$")
@@ -243,13 +246,78 @@ style["Wycombe"] = ("#002f62", "#4db7e4", "$W$")
 style["Yeovil"] = ("#4cad21", "#ffff00", "$Y$")
 
 
+# Germany
+style["Aachen"] = ("#000000", "#ffde00", "$A$")
+style["Augsburg"] = ("#bb342f", "#44724c", "$A$")
+style["Bayern Munich"] = ("#dd0029", "#0066b3", "$B$")
+style["Bielefeld"] = ("#005c9e", "#000100", "$B$")
+style["Bochum"] = ("#1b2b56", "#8dcbff", "$B$")
+style["Cottbus"] = ("#ff0000", "#ffffff", "$C$")
+style["Darmstadt"] = ("#004ea0", "#ffffff", "$D$")
+style["Dortmund"] = ("#ffda00", "#000000", "$D$")
+style["Duisburg"] = ("#1f326e", "#ffffff", "$D$")
+style["Ein Frankfurt"] = ("#000000", "#ff0000", "$E$")
+style["FC Koln"] = ("#fbfbfb", "#fb0000", "$F$")
+style["Fortuna Dusseldorf"] = ("#e40008", "#ffffff", "$F$")
+style["Freiburg"] = ("#ff0000", "#000000", "$F$")
+style["Greuther Furth"] = ("#fafafa", "#009d37", "$G$")
+style["Hamburg"] = ("#185cb5", "#1d191a", "$H$")
+style["Hannover"] = ("#179d33", "#000000", "$H$")
+style["Hansa Rostock"] = ("#006eb9", "#e74021", "$H$")
+style["Heidenheim"] = ("#e30013", "#00387a", "$H$")
+style["Hertha"] = ("#f8f8f8", "#004c9f", "$H$")
+style["Hoffenheim"] = ("#1261b6", "#ffffff", "$H$")
+style["Ingolstadt"] = ("#440000", "#df000c", "$I$")
+style["Kaiserslautern"] = ("#e40008", "#ffffff", "$K$")
+style["Karlsruhe"] = ("#004b95", "#ffffff", "$K$")
+style["Leverkusen"] = ("#141115", "#e32221", "$L$")
+style["Mainz"] = ("#ff0000", "#f2f2f2", "$M$")
+style["Mönchengladbach"] = ("#000000", "#008b43", "$M$")
+style["Munich 1860"] = ("#78bcff", "#ffffff", "$M$")
+style["Nurnberg"] = ("#000000", "#ac081f", "$N$")
+style["Paderborn"] = ("#000000", "#005caa", "$P$")
+style["RB Leipzig"] = ("#de013f", "#001945", "$R$")
+style["Schalke 04"] = ("#004a9d", "#ffffff", "$S$")
+style["St Pauli"] = ("#624636", "#e4010b", "$S$")
+style["Stuttgart"] = ("#d5011d", "#ffffff", "$S$")
+style["Union Berlin"] = ("#ec121d", "#fddd00", "$U$")
+style["Unterhaching"] = ("#ee1b21", "#3aa0db", "$U$")
+style["Werder Bremen"] = ("#169152", "#ffffff", "$W$")
+style["Wolfsburg"] = ("#51a700", "#f8f9fa", "$W$")
+
 team_aliases = {
     "Man United": "Man Utd",
     "Spurs": "Tottenham",
     "Nott'm Forest": "Nottingham Forest",
     "Sheffield United": "Sheffield Utd",
     "Milton Keynes Dons": "Milton Keynes",
+    "M'gladbach": "Mönchengladbach",
 }
+
+
+def maker_default_entry(team):
+    style[team] = ("grey", "white", f"${team[0]}$")
+
+
+def get_color0(team):
+    if team not in style:
+        print(team)
+        maker_default_entry(team)
+    return style[team][0]
+
+
+def get_color1(team):
+    if team not in style:
+        print(team)
+        maker_default_entry(team)
+    return style[team][1]
+
+
+def get_marker(team):
+    if team not in style:
+        print(team)
+        maker_default_entry(team)
+    return style[team][2]
 
 
 def parse_fixturedownload_data(contents):
@@ -460,13 +528,18 @@ def set_ax_limits(ax, max_games, total_games, x_start=-0.5):
 
 _SPANS = {
     "E0": [
-        ("Champions League", 16, (0.0, 0.6, 0.3)),
+        ("Champions League", -4, (0.0, 0.6, 0.3)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
     ],
     "E1": [
-        ("Automatic", 22, (0.0, 0.6, 0.3)),
-        ("Playoffs", 18, (0.3, 0.6, 0.0)),
+        ("Automatic", -2, (0.0, 0.6, 0.3)),
+        ("Playoffs", -6, (0.3, 0.6, 0.0)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
+    "D1": [
+        ("Champions League", -4, (0.0, 0.6, 0.3)),
+        ("Relegation", 1, (0.3, 0.6, 0.0)),
+        ("Playoff", 2, (0.3, 0.6, 0.0)),
     ],
 }
 
@@ -475,6 +548,7 @@ def plot_spans(
     ax,
     ys,
     max_games,
+    num_teams,
     league="E0",
 ):
     spans = _SPANS.get(league, None)
@@ -482,6 +556,9 @@ def plot_spans(
         return
 
     for label, pos, color in spans:
+        if pos < 0:
+            pos = num_teams + pos
+
         ax.text(
             0,
             ys[pos],
@@ -520,10 +597,10 @@ def plot_cumulative_points(
         ax.plot(
             cumpoints[team],
             label=team,
-            color=style[team][0],
-            markeredgecolor=style[team][1],
+            color=get_color0(team),
+            markeredgecolor=get_color1(team),
             alpha=0.75,
-            marker=style[team][2],
+            marker=get_marker(team),
             markersize=8,
             markeredgewidth=0.5,
             linewidth=2,
@@ -550,9 +627,9 @@ def plot_cumulative_points(
             va="bottom",
             weight="bold",
             family=fontfamily,
-            color=style[team][1],
+            color=get_color1(team),
             backgroundcolor=(
-                highlight_color if team == highlight else style[team][0]
+                highlight_color if team == highlight else get_color0(team)
             ),
         )
 
@@ -561,7 +638,7 @@ def plot_cumulative_points(
         ax.plot(
             xs,
             ys,
-            color=style[team][0],
+            color=get_color0(team),
             linestyle="--",
             alpha=0.25,
             linewidth=2 / 3,
@@ -572,6 +649,7 @@ def plot_cumulative_points(
         ax,
         [current_points[team] for team in ranked_teams],
         max_games,
+        num_teams=data["num_teams"],
         league=data["league"],
     )
 
@@ -630,9 +708,9 @@ def plot_positions(
         ax.plot(
             positions[team],
             label=team,
-            color=set_alpha(style[team][0], 0.5),
-            markeredgecolor=style[team][1],
-            marker=style[team][2],
+            color=set_alpha(get_color0(team), 0.5),
+            markeredgecolor=get_color1(team),
+            marker=get_marker(team),
             markersize=8,
             markeredgewidth=0.5,
             linewidth=2,
@@ -659,9 +737,9 @@ def plot_positions(
             va="bottom",
             weight="bold",
             family=fontfamily,
-            color=style[team][1],
+            color=get_color1(team),
             backgroundcolor=(
-                highlight_color if team == highlight else style[team][0]
+                highlight_color if team == highlight else get_color0(team)
             ),
         )
 
@@ -670,7 +748,7 @@ def plot_positions(
         ax.plot(
             xs,
             ys,
-            color=style[team][0],
+            color=get_color0(team),
             linestyle="--",
             alpha=0.25,
             linewidth=2 / 3,
@@ -682,6 +760,7 @@ def plot_positions(
         # want relegation lines to appear above
         [i + 0.5 if i <= 3 else i - 0.5 for i in range(data["num_teams"])],
         max_games,
+        num_teams=data["num_teams"],
         league=data["league"],
     )
 
@@ -724,10 +803,10 @@ def plot_relative_performance(
             xs,
             ys,
             label=team,
-            color=style[team][0],
-            markeredgecolor=style[team][1],
+            color=get_color0(team),
+            markeredgecolor=get_color1(team),
             alpha=0.75,
-            marker=style[team][2],
+            marker=get_marker(team),
             markersize=8,
             markeredgewidth=0.5,
             linewidth=2,
@@ -755,9 +834,9 @@ def plot_relative_performance(
             va="bottom",
             weight="bold",
             family=fontfamily,
-            color=style[team][1],
+            color=get_color1(team),
             backgroundcolor=(
-                highlight_color if team == highlight else style[team][0]
+                highlight_color if team == highlight else get_color0(team)
             ),
         )
 
@@ -766,7 +845,7 @@ def plot_relative_performance(
         ax.plot(
             xs,
             ys,
-            color=style[team][0],
+            color=get_color0(team),
             linestyle="--",
             alpha=0.25,
             linewidth=2 / 3,
@@ -777,6 +856,7 @@ def plot_relative_performance(
         ax,
         [current_points[team] / best_pts[-1] for team in ranked_teams],
         max_games,
+        num_teams=data["num_teams"],
         league=data["league"],
     )
 
@@ -816,10 +896,10 @@ def plot_extrapolated_performance(
             xs,
             ys,
             label=team,
-            color=style[team][0],
-            markeredgecolor=style[team][1],
+            color=get_color0(team),
+            markeredgecolor=get_color1(team),
             alpha=0.75,
-            marker=style[team][2],
+            marker=get_marker(team),
             markersize=8,
             markeredgewidth=0.5,
             linewidth=2,
@@ -849,9 +929,9 @@ def plot_extrapolated_performance(
             va="bottom",
             weight="bold",
             family=fontfamily,
-            color=style[team][1],
+            color=get_color1(team),
             backgroundcolor=(
-                highlight_color if team == highlight else style[team][0]
+                highlight_color if team == highlight else get_color0(team)
             ),
         )
 
@@ -860,7 +940,7 @@ def plot_extrapolated_performance(
         ax.plot(
             xs,
             ys,
-            color=style[team][0],
+            color=get_color0(team),
             linestyle="--",
             alpha=0.25,
             linewidth=2 / 3,
@@ -871,6 +951,7 @@ def plot_extrapolated_performance(
         ax,
         [extrap_points[team][-1] for team in ranked_teams],
         max_games,
+        num_teams=data["num_teams"],
         league=data["league"],
     )
 
@@ -933,10 +1014,10 @@ def plot_form(
             xs,
             ys,
             label=team,
-            color=style[team][0],
-            markeredgecolor=style[team][1],
+            color=get_color0(team),
+            markeredgecolor=get_color1(team),
             alpha=0.75,
-            marker=style[team][2],
+            marker=get_marker(team),
             markersize=8,
             markeredgewidth=0.5,
             linewidth=2,
@@ -964,9 +1045,9 @@ def plot_form(
             va="bottom",
             weight="bold",
             family=fontfamily,
-            color=style[team][1],
+            color=get_color1(team),
             backgroundcolor=(
-                highlight_color if team == highlight else style[team][0]
+                highlight_color if team == highlight else get_color0(team)
             ),
         )
 
@@ -975,7 +1056,7 @@ def plot_form(
         ax.plot(
             xs,
             ys,
-            color=style[team][0],
+            color=get_color0(team),
             linestyle="--",
             alpha=0.25,
             linewidth=2 / 3,
