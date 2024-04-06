@@ -1,4 +1,4 @@
-# Serie A
+# La Liga
 
 ```{toctree}
 :maxdepth: 1
