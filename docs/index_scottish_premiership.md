@@ -1,4 +1,4 @@
-# Scottish Championship
+# Scottish Premiership
 
 ```{toctree}
 :maxdepth: 1
