@@ -1,7 +1,7 @@
-# Championship
+# EFL Championship
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 E1/2023
 E1/2022

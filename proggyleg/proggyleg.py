@@ -42,7 +42,8 @@ def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
 
     fullnames = {
         "E0": "Premier League",
-        "E1": "Championship",
+        "E1": "EFL Championship",
+        "E2": "EFL League One",
         "D1": "Bundesliga",
         "I1": "Serie A",
     }
@@ -246,6 +247,23 @@ style["Wolves"] = ("#FDB913", "#231F20", "$W$")
 style["Wycombe"] = ("#002f62", "#4db7e4", "$W$")
 style["Yeovil"] = ("#4cad21", "#ffff00", "$Y$")
 
+style["Carlisle"] = ("#1d6fb8", "#ee192e", "$C$")
+style["Fleetwood Town"] = ("#e90000", "#FFFFFF", "$F$")
+style["Cheltenham"] = ("#df1c24", "#000000", "$C$")
+style["Port Vale"] = ("#f4a106", "#070604", "$P$")
+style["Cambridge"] = ("#fbba45", "#000000", "$C$")
+style["Shrewsbury"] = ("#00499a", "#f6a900", "$S$")
+style["Exeter"] = ("#ee1242", "#000000", "$E$")
+style["Bristol Rvs"] = ("#004a96", "#ffe100", "$B$")
+style["Northampton"] = ("#8d2940", "#a07e44", "$N$")
+style["Leyton Orient"] = ("#ee1c22", "#f8f9fa", "$L$")
+style["Stevenage"] = ("#ad0e2a", "#ba9d04", "$S$")
+style["Oxford"] = ("#fff200", "#001959", "$O$")
+style["Lincoln"] = ("#fe0000", "#ffffff", "$L$")
+
+style["Forest Green"] = ("#b6dd0f", "#1d191a", "$F$")
+style["Accrington"] = ("#c12a19", "#87cefa", "$A$")
+style["Morecambe"] = ("#991916", "#bb9e66", "$M$")
 
 # Germany
 style["Aachen"] = ("#0f0f0f", "#ffde00", "$A$")
@@ -561,6 +579,11 @@ _SPANS = {
         ("Automatic", -2, (0.0, 0.6, 0.3)),
         ("Playoffs", -6, (0.3, 0.6, 0.0)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
+    "E2": [
+        ("Automatic", -2, (0.0, 0.6, 0.3)),
+        ("Playoffs", -6, (0.3, 0.6, 0.0)),
+        ("Relegation", 3, (0.3, 0.6, 0.0)),
     ],
     "D1": [
         ("Champions League", -4, (0.0, 0.6, 0.3)),

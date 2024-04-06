@@ -1,7 +1,7 @@
 # Serie A
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 I1/2023
 I1/2022

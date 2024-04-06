@@ -3,25 +3,31 @@
 Cumulative points and other progress plots for the premier league.
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 index_premier_league
 ```
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
-index_championship
+index_efl_championship
 ```
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
+
+index_efl_league_one
+```
+
+```{toctree}
+:maxdepth: 1
 
 index_bundesliga
 ```
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 index_serie_a
 ```

@@ -1,7 +1,7 @@
 # Premier League
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 E0/2023
 E0/2022

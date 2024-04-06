@@ -1,7 +1,7 @@
 # Bundesliga
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
 D1/2023
 D1/2022
