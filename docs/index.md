@@ -23,13 +23,19 @@ index_efl_league_one
 ```{toctree}
 :maxdepth: 1
 
-index_bundesliga
+index_la_liga
 ```
 
 ```{toctree}
 :maxdepth: 1
 
 index_serie_a
+```
+
+```{toctree}
+:maxdepth: 1
+
+index_bundesliga
 ```
 
 ```{toctree}

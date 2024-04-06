@@ -44,8 +44,9 @@ def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
         "E0": "Premier League",
         "E1": "EFL Championship",
         "E2": "EFL League One",
-        "D1": "Bundesliga",
+        "SP1": "La Liga",
         "I1": "Serie A",
+        "D1": "Bundesliga",
     }
 
     if dynamic == "auto":
@@ -329,6 +330,31 @@ style["Sampdoria"] = ("#007abc", "#dd3214", "$S$")
 style["Cremonese"] = ("#ee151f", "#818386", "$C$")
 style["Spezia"] = ("#ebebeb", "#000000", "$S$")
 
+# Spain
+style["Alaves"] = ("#002ea1", "#ffffff", "$A$")
+style["Almeria"] = ("#e40008", "#ffd000", "$A$")
+style["Ath Bilbao"] = ("#ef201d", "#ffffff", "$A$")
+style["Ath Madrid"] = ("#f60000", "#212b61", "$A$")
+style["Barcelona"] = ("#00009f", "#ba002f", "$B$")
+style["Betis"] = ("#00964b", "#ffffff", "$B$")
+style["Cadiz"] = ("#fde701", "#0043a9", "$C$")
+style["Celta"] = ("#80bfff", "#e6204d", "$C$")
+style["Elche"] = ("#008000", "#ffffff", "$E$")
+style["Espanol"] = ("#005bca", "#ff0812", "$E$")
+style["Getafe"] = ("#0082c4", "#d3d4d6", "$G$")
+style["Girona"] = ("#d00424", "#0042ff", "$G$")
+style["Granada"] = ("#c40e2e", "#0000ff", "$G$")
+style["Las Palmas"] = ("#ffe500", "#004a9e", "$L$")
+style["Mallorca"] = ("#ee141e", "#fff700", "$M$")
+style["Osasuna"] = ("#00003c", "#cd0000", "$O$")
+style["Real Madrid"] = ("#fbfbfb", "#fcc000", "$R$")
+style["Sevilla"] = ("#f8f9fa", "#d8061b", "$S$")
+style["Sociedad"] = ("#0c398c", "#e7a70c", "$S$")
+style["Valencia"] = ("#ef321f", "#ffe015", "$V$")
+style["Valladolid"] = ("#6f2989", "#fcd400", "$V$")
+style["Vallecano"] = ("#c0b02c", "#e43215", "$V$")
+style["Villarreal"] = ("#ffe767", "#e80000", "$V$")
+
 team_aliases = {
     "Man United": "Man Utd",
     "Spurs": "Tottenham",
@@ -591,6 +617,10 @@ _SPANS = {
         ("Playoff", 2, (0.3, 0.6, 0.0)),
     ],
     "I1": [
+        ("Champions League", -4, (0.0, 0.6, 0.3)),
+        ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
+    "SP1": [
         ("Champions League", -4, (0.0, 0.6, 0.3)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
     ],
