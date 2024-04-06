@@ -47,6 +47,7 @@ def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
         "SP1": "La Liga",
         "I1": "Serie A",
         "D1": "Bundesliga",
+        "SC0": "Scottish Premiership",
     }
 
     if dynamic == "auto":
@@ -179,6 +180,7 @@ style = collections.defaultdict(lambda: ("grey", "white", "o"))
 
 
 # England
+style["Accrington"] = ("#c12a19", "#87cefa", "$A$")
 style["Arsenal"] = ("#EF0107", "#FFFFFF", "$A$")
 style["Aston Villa"] = ("#95BFE5", "#670E36", "$A$")
 style["Barnsley"] = ("#a80409", "#e1e3e3", "$B$")
@@ -191,11 +193,15 @@ style["Bradford"] = ("#ffbf00", "#800000", "$B$")
 style["Brentford"] = ("#e30613", "#fbb800", "$B$")
 style["Brighton"] = ("#0057B8", "#FFCD00", "$B$")
 style["Bristol City"] = ("#e3131e", "#ffffff", "$B$")
+style["Bristol Rvs"] = ("#004a96", "#ffe100", "$B$")
 style["Burnley"] = ("#6C1D45", "#ede939", "$B$")
 style["Burton"] = ("#fffa05", "#000000", "$B$")
+style["Cambridge"] = ("#fbba45", "#000000", "$C$")
 style["Cardiff"] = ("#0070B5", "#D11524", "$C$")
+style["Carlisle"] = ("#1d6fb8", "#ee192e", "$C$")
 style["Charlton"] = ("#0f0f0f", "#d4021d", "$C$")
 style["Chelsea"] = ("#034694", "#DBA111", "$C$")
+style["Cheltenham"] = ("#df1c24", "#000000", "$C$")
 style["Colchester"] = ("#0066a6", "#fcb23e", "$C$")
 style["Coventry"] = ("#87beef", "#cbd7de", "$C$")
 style["Crewe"] = ("#fafafa", "#d62818", "$C$")
@@ -203,6 +209,9 @@ style["Crystal Palace"] = ("#1B458F", "#C4122E", "$C$")
 style["Derby"] = ("#0f0f0f", "#FFFFFF", "$D$")
 style["Doncaster"] = ("#d81e20", "#121212", "$D$")
 style["Everton"] = ("#003399", "#FFFFFF", "$E$")
+style["Exeter"] = ("#ee1242", "#000000", "$E$")
+style["Fleetwood Town"] = ("#e90000", "#FFFFFF", "$F$")
+style["Forest Green"] = ("#b6dd0f", "#1d191a", "$F$")
 style["Fulham"] = ("#0f0f0f", "#CC0000", "$F$")
 style["Gillingham"] = ("#1d191a", "#135daf", "$G$")
 style["Huddersfield"] = ("#0E63AD", "#FFFFFF", "$H$")
@@ -210,6 +219,8 @@ style["Hull"] = ("#F18A01", "#000000", "$H$")
 style["Ipswich"] = ("#3764a4", "#df2834", "$I$")
 style["Leeds"] = ("#ffe100", "#0060aa", "$L$")
 style["Leicester"] = ("#003090", "#FDBE11", "$L$")
+style["Leyton Orient"] = ("#ee1c22", "#f8f9fa", "$L$")
+style["Lincoln"] = ("#fe0000", "#ffffff", "$L$")
 style["Liverpool"] = ("#C8102E", "#00B2A9", "$L$")
 style["Luton"] = ("#002e62", "#fb861f", "$L$")
 style["Man City"] = ("#6CABDD", "#1C2C5B", "$M$")
@@ -217,12 +228,16 @@ style["Man Utd"] = ("#DA020E", "#FBE122", "$M$")
 style["Middlesbrough"] = ("#DE1B22", "#FFFFFF", "$M$")
 style["Millwall"] = ("#00337b", "#90a4a3", "$M$")
 style["Milton Keynes"] = ("#fafafa", "#e71825", "$M$")
+style["Morecambe"] = ("#991916", "#bb9e66", "$M$")
 style["Newcastle"] = ("#241F20", "#FFFFFF", "$N$")
+style["Northampton"] = ("#8d2940", "#a07e44", "$N$")
 style["Norwich"] = ("#00A650", "#FFF200", "$N$")
 style["Nottingham Forest"] = ("#DD0000", "#FFFFFF", "$N$")
 style["Oldham"] = ("#004998", "#ffffff", "$O$")
+style["Oxford"] = ("#fff200", "#001959", "$O$")
 style["Peterboro"] = ("#0067b5", "#a6c3dc", "$P$")
 style["Plymouth"] = ("#003c2b", "#d5a44d", "$P$")
+style["Port Vale"] = ("#f4a106", "#070604", "$P$")
 style["Portsmouth"] = ("#001489", "#fbfdff", "$P$")
 style["Preston"] = ("#f4f4f4", "#000055", "$P$")
 style["QPR"] = ("#175ba5", "#ffffff", "$Q$")
@@ -232,8 +247,10 @@ style["Rotherham"] = ("#e31720", "#ffffff", "$R$")
 style["Scunthorpe"] = ("#aa2e47", "#00adde", "$S$")
 style["Sheffield Utd"] = ("#EE2737", "#000000", "$S$")
 style["Sheffield Weds"] = ("#4482d0", "#eab202", "$S$")
+style["Shrewsbury"] = ("#00499a", "#f6a900", "$S$")
 style["Southampton"] = ("#D71920", "#130C0E", "$S$")
 style["Southend"] = ("#003781", "#ffffff", "$S$")
+style["Stevenage"] = ("#ad0e2a", "#ba9d04", "$S$")
 style["Stoke"] = ("#E03A3E", "#1B449C", "$S$")
 style["Sunderland"] = ("#eb172b", "#211e1e", "$S$")
 style["Swansea"] = ("#0f0f0f", "#FFFFFF", "$S$")
@@ -248,23 +265,22 @@ style["Wolves"] = ("#FDB913", "#231F20", "$W$")
 style["Wycombe"] = ("#002f62", "#4db7e4", "$W$")
 style["Yeovil"] = ("#4cad21", "#ffff00", "$Y$")
 
-style["Carlisle"] = ("#1d6fb8", "#ee192e", "$C$")
-style["Fleetwood Town"] = ("#e90000", "#FFFFFF", "$F$")
-style["Cheltenham"] = ("#df1c24", "#000000", "$C$")
-style["Port Vale"] = ("#f4a106", "#070604", "$P$")
-style["Cambridge"] = ("#fbba45", "#000000", "$C$")
-style["Shrewsbury"] = ("#00499a", "#f6a900", "$S$")
-style["Exeter"] = ("#ee1242", "#000000", "$E$")
-style["Bristol Rvs"] = ("#004a96", "#ffe100", "$B$")
-style["Northampton"] = ("#8d2940", "#a07e44", "$N$")
-style["Leyton Orient"] = ("#ee1c22", "#f8f9fa", "$L$")
-style["Stevenage"] = ("#ad0e2a", "#ba9d04", "$S$")
-style["Oxford"] = ("#fff200", "#001959", "$O$")
-style["Lincoln"] = ("#fe0000", "#ffffff", "$L$")
-
-style["Forest Green"] = ("#b6dd0f", "#1d191a", "$F$")
-style["Accrington"] = ("#c12a19", "#87cefa", "$A$")
-style["Morecambe"] = ("#991916", "#bb9e66", "$M$")
+# Scotland
+style["Dundee United"] = ("#fd6701", "#121212", "$D$")
+style["Ross County"] = ("#00065b", "#ee1b24", "$R$")
+style["Kilmarnock"] = ("#2b3390", "#c07634", "$K$")
+style["St Johnstone"] = ("#0052a2", "#ddd3af", "$S$")
+style["Livingston"] = ("#fbc905", "#000000", "$L$")
+style["St Mirren"] = ("#0f0f0f", "#ffffff", "$S$")
+style["Motherwell"] = ("#f6b800", "#9e0000", "$M$")
+style["Hibernian"] = ("#007638", "#f8f9fa", "$H$")
+style["Hearts"] = ("#a1122d", "#d1d3d4", "$H$")
+style["Aberdeen"] = ("#e30013", "#ffffff", "$A$")
+style["Rangers"] = ("#002ea1", "#ffffff", "$R$")
+style["Celtic"] = ("#009d4a", "#fefffe", "$C$")
+style["Dundee"] = ("#152142", "#ffffff", "$D$")
+style["Hamilton"] = ("#cd363d", "#ffffff", "$H$")
+style["Partick"] = ("#a90000", "#ffdf00", "$P$")
 
 # Germany
 style["Aachen"] = ("#0f0f0f", "#ffde00", "$A$")
@@ -520,6 +536,11 @@ def compute_cumulative_quantities(data, penalties=None, league="E0"):
     )
     places = {team: i for i, team in enumerate(ranked_teams)}
 
+    if league == "SC0":
+        total_games = 4 * (len(teams) - 1)
+    else:
+        total_games = 2 * (len(teams) - 1)
+
     return {
         "cumgoaldiff": cumgoaldiff,
         "cumgoalsscored": cumgoalsscored,
@@ -533,7 +554,7 @@ def compute_cumulative_quantities(data, penalties=None, league="E0"):
         "points": points,
         "ranked_teams": ranked_teams,
         "teams": teams,
-        "total_games": 2 * (len(teams) - 1),
+        "total_games": total_games,
         "league": league,
     }
 
@@ -623,6 +644,10 @@ _SPANS = {
     "SP1": [
         ("Champions League", -4, (0.0, 0.6, 0.3)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
+    "SC0": [
+        ("Champions League", -2, (0.0, 0.6, 0.3)),
+        ("Relegation", 0, (0.3, 0.6, 0.0)),
     ],
 }
 
