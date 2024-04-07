@@ -1306,18 +1306,8 @@ def autoplot(
     else:
         penalties = None
 
-    # if source == "fixturedownload":
-    #     fname = pathlib.Path(__file__).parent / f"data/epl-{year}-UTC.csv"
-    # elif source == "footballdata":
-    #     fname = pathlib.Path(__file__).parent / f"data/E0-{year}.csv"
-    # else:
-    #     raise ValueError(f"Unknown data source {source}")
-
-    # with open(fname, "r") as f:
-    #     contents = f.read()
-
     if source == "auto":
-        if league in FIXTUREDOWNLOAD_LEAGUE_ALIASES and year == 2023:
+        if (league in FIXTUREDOWNLOAD_LEAGUE_ALIASES) and (year == "2023"):
             source = "fixturedownload"
         else:
             source = "footballdata"
