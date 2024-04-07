@@ -372,12 +372,67 @@ style["Vallecano"] = ("#c0b02c", "#e43215", "$V$")
 style["Villarreal"] = ("#ffe767", "#e80000", "$V$")
 
 team_aliases = {
-    "Man United": "Man Utd",
-    "Spurs": "Tottenham",
-    "Nott'm Forest": "Nottingham Forest",
-    "Sheffield United": "Sheffield Utd",
-    "Milton Keynes Dons": "Milton Keynes",
+    "1. FC Heidenheim 1846": "Heidenheim",
+    "1. FC Köln": "FC Koln",
+    "1. FC Union Berlin": "Union Berlin",
+    "1. FSV Mainz 05": "Mainz",
+    "Athletic Club": "Ath Bilbao",
+    "Atlético de Madrid": "Ath Madrid",
+    "Bayer 04 Leverkusen": "Leverkusen",
+    "Birmingham City": "Birmingham",
+    "Blackburn Rovers": "Blackburn",
+    "Borussia Dortmund": "Dortmund",
+    "Borussia Mönchengladbach": "Mönchengladbach",
+    "CA Osasuna": "Osasuna",
+    "Cádiz CF": "Cadiz",
+    "Cardiff City": "Cardiff",
+    "Coventry City": "Coventry",
+    "Deportivo Alavés": "Alaves",
+    "Eintracht Frankfurt": "Ein Frankfurt",
+    "FC Augsburg": "Augsburg",
+    "FC Barcelona": "Barcelona",
+    "FC Bayern München": "Bayern Munich",
+    "Getafe CF": "Getafe",
+    "Girona FC": "Girona",
+    "Granada CF": "Granada",
+    "Hellas Verona": "Verona",
+    "Huddersfield Town": "Huddersfield",
+    "Hull City": "Hull",
+    "Ipswich Town": "Ipswich",
+    "Leeds United": "Leeds",
+    "Leicester City": "Leicester",
     "M'gladbach": "Mönchengladbach",
+    "Man United": "Man Utd",
+    "Milton Keynes Dons": "Milton Keynes",
+    "Norwich City": "Norwich",
+    "Nott'm Forest": "Nottingham Forest",
+    "Plymouth Argyle": "Plymouth",
+    "Preston North End": "Preston",
+    "Queens Park Rangers": "QPR",
+    "Rayo Vallecano": "Vallecano",
+    "RC Celta": "Celta",
+    "RCD Mallorca": "Mallorca",
+    "Real Betis": "Betis",
+    "Real Sociedad": "Sociedad",
+    "Rotherham United": "Rotherham",
+    "Sevilla FC": "Sevilla",
+    "Sheffield United": "Sheffield Utd",
+    "Sheffield Wednesday": "Sheffield Weds",
+    "Sport-Club Freiburg": "Freiburg",
+    "Spurs": "Tottenham",
+    "Stoke City": "Stoke",
+    "SV Darmstadt 98": "Darmstadt",
+    "SV Werder Bremen": "Werder Bremen",
+    "Swansea City": "Swansea",
+    "TSG Hoffenheim": "Hoffenheim",
+    "UD Almería": "Almeria",
+    "UD Las Palmas": "Las Palmas",
+    "Valencia CF": "Valencia",
+    "VfB Stuttgart": "Stuttgart",
+    "VfL Bochum 1848": "Bochum",
+    "VfL Wolfsburg": "Wolfsburg",
+    "Villarreal CF": "Villarreal",
+    "West Bromwich Albion": "West Brom",
 }
 
 
@@ -1215,12 +1270,29 @@ def get_footballdata(year, league="E0"):
     )
 
 
+FIXTUREDOWNLOAD_LEAGUE_ALIASES = {
+    "E0": "epl",
+    "E1": "championship",
+    "SP1": "la-liga",
+    "I1": "serie-a",
+    "D1": "bundesliga",
+}
+
+
+@functools.lru_cache
+def get_fixturedownload(year, league="E0"):
+    identifier = FIXTUREDOWNLOAD_LEAGUE_ALIASES[league]
+    return download_file_content(
+        f"https://fixturedownload.com/download/{identifier}-{year}-UTC.csv"
+    )
+
+
 def autoplot(
     year=2023,
     league="E0",
     which="cumulative",
     highlight=None,
-    source="footballdata",
+    source="auto",
     **kwargs,
 ):
     # import pathlib
@@ -1244,12 +1316,18 @@ def autoplot(
     # with open(fname, "r") as f:
     #     contents = f.read()
 
-    contents = get_footballdata(year=year, league=league)
+    if source == "auto":
+        if league in FIXTUREDOWNLOAD_LEAGUE_ALIASES and year == 2023:
+            source = "fixturedownload"
+        else:
+            source = "footballdata"
 
-    if source == "fixturedownload":
-        data = parse_fixturedownload_data(contents)
-    elif source == "footballdata":
+    if source == "footballdata":
+        contents = get_footballdata(year=year, league=league)
         data = parse_footballdata_data(contents)
+    elif source == "fixturedownload":
+        contents = get_fixturedownload(year=year, league=league)
+        data = parse_fixturedownload_data(contents)
 
     data = compute_cumulative_quantities(
         data, penalties=penalties, league=league
