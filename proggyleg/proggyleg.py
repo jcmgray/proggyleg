@@ -743,7 +743,12 @@ def plot_spans(
         )
 
 
-def speckle_plot(ax, *args, team):
+def speckle_plot(ax, *args, team, **kwargs):
+
+    kwargs.setdefault("markersize", 5)
+    kwargs.setdefault("markeredgewidth", 0.25)
+    kwargs.setdefault("linewidth", 2.5)
+
     for color, linestyle, marker, alpha in [
         (get_color0(team), "-", get_marker(team), 0.75),
         (get_color1(team), (0, (1, 2)), "", 0.25),
@@ -755,9 +760,7 @@ def speckle_plot(ax, *args, team):
             markeredgecolor=get_color1(team),
             alpha=alpha,
             marker=marker,
-            markersize=8,
-            markeredgewidth=0.5,
-            linewidth=2,
+            **kwargs
         )
 
 
@@ -767,6 +770,7 @@ def plot_cumulative_points(
     ax,
     highlight="",
     highlight_color=(0.8, 1.0, 0.0),
+    **kwargs,
 ):
     ranked_teams = data["ranked_teams"]
     cumpoints = data["cumpoints"]
@@ -777,7 +781,7 @@ def plot_cumulative_points(
     current_points = data["current_points"]
 
     for team in ranked_teams:
-        speckle_plot(ax, cumpoints[team], team=team)
+        speckle_plot(ax, cumpoints[team], team=team, **kwargs)
         if team == highlight:
             ax.plot(
                 cumpoints[team],
@@ -854,6 +858,7 @@ def plot_positions(
     ax,
     highlight="",
     highlight_color=(0.8, 1.0, 0.0),
+    **kwargs,
 ):
     teams = data["teams"]
     ranked_teams = data["ranked_teams"]
@@ -876,7 +881,7 @@ def plot_positions(
             positions.setdefault(team, []).append(i)
 
     for team in ranked_teams:
-        speckle_plot(ax, positions[team], team=team)
+        speckle_plot(ax, positions[team], team=team, **kwargs)
         if team == highlight:
             ax.plot(
                 positions[team],
@@ -938,6 +943,7 @@ def plot_relative_performance(
     ax,
     highlight="",
     highlight_color=(0.8, 1.0, 0.0),
+    **kwargs
 ):
     teams = data["teams"]
     ranked_teams = data["ranked_teams"]
@@ -958,7 +964,7 @@ def plot_relative_performance(
     for team in ranked_teams:
         xs = np.arange(1, games_played[team])
         ys = cumpoints[team][1:] / best_pts[1 : games_played[team]]
-        speckle_plot(ax, xs, ys, team=team)
+        speckle_plot(ax, xs, ys, team=team, **kwargs)
         if team == highlight:
             ax.plot(
                 xs,
@@ -1019,6 +1025,7 @@ def plot_extrapolated_performance(
     ax,
     highlight="",
     highlight_color=(0.8, 1.0, 0.0),
+    **kwargs
 ):
     ranked_teams = data["ranked_teams"]
     cumpoints = data["cumpoints"]
@@ -1037,7 +1044,7 @@ def plot_extrapolated_performance(
     for i, team in enumerate(ranked_teams):
         xs = np.arange(1, games_played[team])
         ys = extrap_points[team]
-        speckle_plot(ax, xs, ys, team=team)
+        speckle_plot(ax, xs, ys, team=team, **kwargs)
         if team == highlight:
             ax.plot(
                 xs,
@@ -1119,6 +1126,7 @@ def plot_form(
     window_size=5,
     highlight="",
     highlight_color=(0.8, 1.0, 0.0),
+    **kwargs
 ):
     ranked_teams = data["ranked_teams"]
     games_played = data["games_played"]
@@ -1141,7 +1149,7 @@ def plot_form(
     for team in ranked_by_form_teams:
         ys = form[team]
         xs = np.arange(1, len(ys) + 1)
-        speckle_plot(ax, xs, ys, team=team)
+        speckle_plot(ax, xs, ys, team=team, **kwargs)
         if team == highlight:
             ax.plot(
                 xs,
@@ -1241,6 +1249,18 @@ def get_fixturedownload(year, league="E0"):
     )
 
 
+PENALTIES = {
+    ("2023", "E0"): {
+        "Everton": 8,
+        "Nottingham Forest": 4,
+    },
+    ("2023", "E2"): {
+        "Wigan": 8,
+        "Reading": 6,
+    }
+}
+
+
 def autoplot(
     year=2023,
     league="E0",
@@ -1252,13 +1272,7 @@ def autoplot(
     # import pathlib
 
     year = str(year)
-    if (year == "2023") and (league == "E0"):
-        penalties = {
-            "Everton": 6,
-            "Nottingham Forest": 4,
-        }
-    else:
-        penalties = None
+    penalties = PENALTIES.get((year, league), None)
 
     if source == "auto":
         if (league in FIXTUREDOWNLOAD_LEAGUE_ALIASES) and (year == "2023"):
