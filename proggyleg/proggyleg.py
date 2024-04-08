@@ -759,22 +759,26 @@ def plot_cumulative_points(
     current_points = data["current_points"]
 
     for team in ranked_teams:
-        ax.plot(
-            cumpoints[team],
-            label=team,
-            color=get_color0(team),
-            markeredgecolor=get_color1(team),
-            alpha=0.75,
-            marker=get_marker(team),
-            markersize=8,
-            markeredgewidth=0.5,
-            linewidth=2,
-        )
+
+        for color, linestyle, marker, alpha in [
+            (get_color0(team), "-", get_marker(team), 0.75),
+            (get_color1(team), (0, (1, 2)), "", 0.25),
+        ]:
+            ax.plot(
+                cumpoints[team],
+                color=color,
+                linestyle=linestyle,
+                markeredgecolor=get_color1(team),
+                alpha=alpha,
+                marker=marker,
+                markersize=8,
+                markeredgewidth=0.5,
+                linewidth=2,
+            )
 
         if team == highlight:
             ax.plot(
                 cumpoints[team],
-                label=team,
                 color=highlight_color,
                 zorder=-100,
                 linewidth=10,
@@ -872,7 +876,6 @@ def plot_positions(
     for team in ranked_teams:
         ax.plot(
             positions[team],
-            label=team,
             color=set_alpha(get_color0(team), 0.5),
             markeredgecolor=get_color1(team),
             marker=get_marker(team),
@@ -884,7 +887,6 @@ def plot_positions(
         if team == highlight:
             ax.plot(
                 positions[team],
-                label=team,
                 color=highlight_color,
                 zorder=-100,
                 linewidth=10,
@@ -967,7 +969,6 @@ def plot_relative_performance(
         ax.plot(
             xs,
             ys,
-            label=team,
             color=get_color0(team),
             markeredgecolor=get_color1(team),
             alpha=0.75,
@@ -981,7 +982,6 @@ def plot_relative_performance(
             ax.plot(
                 xs,
                 ys,
-                label=team,
                 color=highlight_color,
                 zorder=-100,
                 linewidth=10,
@@ -1060,7 +1060,6 @@ def plot_extrapolated_performance(
         ax.plot(
             xs,
             ys,
-            label=team,
             color=get_color0(team),
             markeredgecolor=get_color1(team),
             alpha=0.75,
@@ -1074,7 +1073,6 @@ def plot_extrapolated_performance(
             ax.plot(
                 xs,
                 ys,
-                label=team,
                 color=highlight_color,
                 zorder=-100,
                 linewidth=10,
@@ -1178,7 +1176,6 @@ def plot_form(
         ax.plot(
             xs,
             ys,
-            label=team,
             color=get_color0(team),
             markeredgecolor=get_color1(team),
             alpha=0.75,
@@ -1192,7 +1189,6 @@ def plot_form(
             ax.plot(
                 xs,
                 ys,
-                label=team,
                 color=highlight_color,
                 zorder=-100,
                 linewidth=10,
