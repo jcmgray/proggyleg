@@ -591,7 +591,8 @@ def compute_cumulative_quantities(data, penalties=None, league="E0"):
     )
     places = {team: i for i, team in enumerate(ranked_teams)}
 
-    if league == "SC0":
+    if league[:2] == "SC":
+        # Scottish leagues have 4 games per team
         total_games = 4 * (len(teams) - 1)
     else:
         total_games = 2 * (len(teams) - 1)
@@ -1308,16 +1309,30 @@ def autoplot(
 
     if source == "auto":
         if (league in FIXTUREDOWNLOAD_LEAGUE_ALIASES) and (year == "2023"):
-            source = "fixturedownload"
+            source = "choose"
         else:
             source = "footballdata"
 
-    if source == "footballdata":
-        contents = get_footballdata(year=year, league=league)
-        data = parse_footballdata_data(contents)
+    if source == "choose":
+        # use whichever has more data
+        data_footballdata = parse_footballdata_data(
+            get_footballdata(year=year, league=league)
+        )
+        data_fixturedownload = parse_fixturedownload_data(
+            get_fixturedownload(year=year, league=league)
+        )
+        if len(data_footballdata) > len(data_fixturedownload):
+            data = data_footballdata
+        else:
+            data = data_fixturedownload
+    elif source == "footballdata":
+        data = parse_footballdata_data(
+            get_footballdata(year=year, league=league)
+        )
     elif source == "fixturedownload":
-        contents = get_fixturedownload(year=year, league=league)
-        data = parse_fixturedownload_data(contents)
+        data = parse_fixturedownload_data(
+            get_fixturedownload(year=year, league=league)
+        )
 
     data = compute_cumulative_quantities(
         data, penalties=penalties, league=league
