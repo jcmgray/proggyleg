@@ -743,6 +743,24 @@ def plot_spans(
         )
 
 
+def speckle_plot(ax, *args, team):
+    for color, linestyle, marker, alpha in [
+        (get_color0(team), "-", get_marker(team), 0.75),
+        (get_color1(team), (0, (1, 2)), "", 0.25),
+    ]:
+        ax.plot(
+            *args,
+            color=color,
+            linestyle=linestyle,
+            markeredgecolor=get_color1(team),
+            alpha=alpha,
+            marker=marker,
+            markersize=8,
+            markeredgewidth=0.5,
+            linewidth=2,
+        )
+
+
 @setup_and_handle_figure
 def plot_cumulative_points(
     data,
@@ -759,23 +777,7 @@ def plot_cumulative_points(
     current_points = data["current_points"]
 
     for team in ranked_teams:
-
-        for color, linestyle, marker, alpha in [
-            (get_color0(team), "-", get_marker(team), 0.75),
-            (get_color1(team), (0, (1, 2)), "", 0.25),
-        ]:
-            ax.plot(
-                cumpoints[team],
-                color=color,
-                linestyle=linestyle,
-                markeredgecolor=get_color1(team),
-                alpha=alpha,
-                marker=marker,
-                markersize=8,
-                markeredgewidth=0.5,
-                linewidth=2,
-            )
-
+        speckle_plot(ax, cumpoints[team], team=team)
         if team == highlight:
             ax.plot(
                 cumpoints[team],
@@ -874,16 +876,7 @@ def plot_positions(
             positions.setdefault(team, []).append(i)
 
     for team in ranked_teams:
-        ax.plot(
-            positions[team],
-            color=set_alpha(get_color0(team), 0.5),
-            markeredgecolor=get_color1(team),
-            marker=get_marker(team),
-            markersize=8,
-            markeredgewidth=0.5,
-            linewidth=2,
-        )
-
+        speckle_plot(ax, positions[team], team=team)
         if team == highlight:
             ax.plot(
                 positions[team],
@@ -965,19 +958,7 @@ def plot_relative_performance(
     for team in ranked_teams:
         xs = np.arange(1, games_played[team])
         ys = cumpoints[team][1:] / best_pts[1 : games_played[team]]
-
-        ax.plot(
-            xs,
-            ys,
-            color=get_color0(team),
-            markeredgecolor=get_color1(team),
-            alpha=0.75,
-            marker=get_marker(team),
-            markersize=8,
-            markeredgewidth=0.5,
-            linewidth=2,
-        )
-
+        speckle_plot(ax, xs, ys, team=team)
         if team == highlight:
             ax.plot(
                 xs,
@@ -1056,19 +1037,7 @@ def plot_extrapolated_performance(
     for i, team in enumerate(ranked_teams):
         xs = np.arange(1, games_played[team])
         ys = extrap_points[team]
-
-        ax.plot(
-            xs,
-            ys,
-            color=get_color0(team),
-            markeredgecolor=get_color1(team),
-            alpha=0.75,
-            marker=get_marker(team),
-            markersize=8,
-            markeredgewidth=0.5,
-            linewidth=2,
-        )
-
+        speckle_plot(ax, xs, ys, team=team)
         if team == highlight:
             ax.plot(
                 xs,
@@ -1172,19 +1141,7 @@ def plot_form(
     for team in ranked_by_form_teams:
         ys = form[team]
         xs = np.arange(1, len(ys) + 1)
-
-        ax.plot(
-            xs,
-            ys,
-            color=get_color0(team),
-            markeredgecolor=get_color1(team),
-            alpha=0.75,
-            marker=get_marker(team),
-            markersize=8,
-            markeredgewidth=0.5,
-            linewidth=2,
-        )
-
+        speckle_plot(ax, xs, ys, team=team)
         if team == highlight:
             ax.plot(
                 xs,
