@@ -150,6 +150,11 @@ def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
     nb["metadata"]["mystnb"] = {
         "execution_mode": "force" if dynamic else "off",
     }
+    nb["metadata"]["kernelspec"] = {
+        "display_name": "Python 3",
+        "language": "python",
+        "name": "python3",
+    }
     nbf.write(nb, filename)
 
 
