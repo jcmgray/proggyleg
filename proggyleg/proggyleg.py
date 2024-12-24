@@ -1119,14 +1119,9 @@ def window_form(points, window_size=5):
 
 
 def exponential_form(points, window_size=5):
-    form = []
-    for i, p in enumerate(points, 1):
-        if form:
-            f_prev = form[-1]
-        else:
-            # start all teams on average form
-            f_prev = 1.5
-
+    form = [1.5]
+    for p in points:
+        f_prev = form[-1]
         form.append(
             ((window_size - 1) / window_size) * f_prev + (1 / window_size) * p
         )
@@ -1162,7 +1157,7 @@ def plot_form(
 
     for team in ranked_by_form_teams:
         ys = form[team]
-        xs = np.arange(1, len(ys) + 1)
+        xs = np.arange(len(ys))
         speckle_plot(ax, xs, ys, team=team, **kwargs)
         if team == highlight:
             ax.plot(
@@ -1224,7 +1219,7 @@ def plot_form(
         alpha=2 / 3,
     )
 
-    set_ax_limits(ax, max_games, data["total_games"], x_start=0.5)
+    set_ax_limits(ax, max_games, data["total_games"], x_start=-0.5)
     ax.set_xlabel("Games Played")
     ax.set_ylabel("Average points per game")
     ax.set_ylim(-0.1, 3.1)
