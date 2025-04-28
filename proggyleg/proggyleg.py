@@ -539,7 +539,7 @@ def parse_footballdata_data(contents):
     return data
 
 
-def compute_cumulative_quantities(data, penalties=None, league="E0"):
+def compute_cumulative_quantities(data, penalties=None, league="E0", year=0):
     penalties = penalties or {}
 
     points = {}
@@ -631,6 +631,7 @@ def compute_cumulative_quantities(data, penalties=None, league="E0"):
         "teams": teams,
         "total_games": total_games,
         "league": league,
+        "year": int(year),
     }
 
 
@@ -733,7 +734,7 @@ def plot_spans(
     max_games,
     num_teams,
     league="E0",
-    year=None,
+    year=0,
 ):
     spans = _SPANS.get(league, None)
     if spans is None:
@@ -1340,7 +1341,7 @@ def autoplot(
         )
 
     data = compute_cumulative_quantities(
-        data, penalties=penalties, league=league
+        data, penalties=penalties, league=league, year=year,
     )
 
     with mpl.style.context(NEUTRAL_STYLE):
