@@ -694,7 +694,7 @@ def set_ax_limits(ax, max_games, total_games, x_start=-0.5):
 
 _SPANS = {
     "E0": [
-        ("Champions League", -4, (0.0, 0.6, 0.3)),
+        ("Champions League", -5, (0.0, 0.6, 0.3)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
     ],
     "E1": [
@@ -717,7 +717,7 @@ _SPANS = {
         ("Relegation", 2, (0.3, 0.6, 0.0)),
     ],
     "SP1": [
-        ("Champions League", -4, (0.0, 0.6, 0.3)),
+        ("Champions League", -5, (0.0, 0.6, 0.3)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
     ],
     "SC0": [
@@ -733,12 +733,21 @@ def plot_spans(
     max_games,
     num_teams,
     league="E0",
+    year=None,
 ):
     spans = _SPANS.get(league, None)
     if spans is None:
         return
 
     for label, pos, color in spans:
+
+        if (
+            (label == "Champions League") and
+            (year < 2024) and
+            (league in ("E0", "SP1"))
+        ):
+            pos = -4
+
         if pos < 0:
             pos = num_teams + pos
 
@@ -762,18 +771,29 @@ def plot_spans(
         )
 
 
-def speckle_plot(ax, *args, team, **kwargs):
+def speckle_plot(ax, *args, team, jitter=0.0, **kwargs):
 
     kwargs.setdefault("markersize", 5)
     kwargs.setdefault("markeredgewidth", 0.25)
     kwargs.setdefault("linewidth", 2.5)
+
+    if len(args) == 1:
+        ys, = args
+        xs = np.arange(len(ys))
+    else:
+        xs, ys = args
+
+    if jitter != 0.0:
+        xs = np.array(xs) + np.random.uniform(low=-jitter, high=jitter, size=len(xs))
+        # ys = np.array(ys) + np.random.uniform(low=-jitter, high=jitter, size=len(ys))
 
     for color, linestyle, marker, alpha in [
         (get_color0(team), "-", get_marker(team), 0.75),
         (get_color1(team), (0, (1, 2)), "", 0.25),
     ]:
         ax.plot(
-            *args,
+            xs,
+            ys,
             color=color,
             linestyle=linestyle,
             markeredgecolor=get_color1(team),
@@ -813,6 +833,7 @@ def plot_cumulative_points(
         legend_xloc = games_played[team] * 1.05
         legend_yloc = max_points * places[team] / (data["num_teams"] - 1)
 
+        # make legend labels
         ax.text(
             legend_xloc,
             legend_yloc,
@@ -827,11 +848,10 @@ def plot_cumulative_points(
             ),
         )
 
-        xs = [games_played[team] - 0.75, legend_xloc]
-        ys = [current_points[team], legend_yloc]
+        # link legend labels to last point
         ax.plot(
-            xs,
-            ys,
+            [games_played[team] - 0.75, legend_xloc],
+            [current_points[team], legend_yloc],
             color=get_color0(team),
             linestyle="--",
             alpha=0.25,
@@ -845,6 +865,7 @@ def plot_cumulative_points(
         max_games,
         num_teams=data["num_teams"],
         league=data["league"],
+        year=data["year"],
     )
 
     set_ax_limits(ax, max_games, data["total_games"])
@@ -946,6 +967,7 @@ def plot_positions(
         max_games,
         num_teams=data["num_teams"],
         league=data["league"],
+        year=data["year"],
     )
 
     ax.set_xlabel("Games Played")
@@ -1029,6 +1051,7 @@ def plot_relative_performance(
         max_games,
         num_teams=data["num_teams"],
         league=data["league"],
+        year=data["year"],
     )
 
     ax.set_xlabel("Games Played")
@@ -1111,6 +1134,7 @@ def plot_extrapolated_performance(
         max_games,
         num_teams=data["num_teams"],
         league=data["league"],
+        year=data["year"],
     )
 
     set_ax_limits(ax, max_games, data["total_games"], x_start=0.5)
@@ -1334,6 +1358,10 @@ def autoplot(
         elif which == "form":
             fn = plot_form
         else:
-            raise ValueError(f"Unknown plot type {which}")
+            raise ValueError(
+                f"Unknown plot type {which}, should be one of "
+                "'cumulative', 'extrapolated', 'position', 'relative', 'form'"
+            )
+
 
         return fn(data, highlight=highlight, figsize=(width, height), **kwargs)
