@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+CURRENT_YEAR = 2025
+
+
 def set_alpha(c, alpha):
     import matplotlib as mpl
 
@@ -14,7 +17,7 @@ def set_alpha(c, alpha):
     return (*rgb, alpha)
 
 
-def update_data(year=2023, source="footballdata"):
+def update_data(year=CURRENT_YEAR, source="footballdata"):
     import urllib.request
 
     if source == "fixturedownload":
@@ -36,7 +39,7 @@ def update_data(year=2023, source="footballdata"):
     urllib.request.urlretrieve(url, target)
 
 
-def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
+def generate_notebook_doc(year=CURRENT_YEAR, league="E0", dynamic="auto"):
     import pathlib
     import nbformat as nbf
 
@@ -51,7 +54,7 @@ def generate_notebook_doc(year=2023, league="E0", dynamic="auto"):
     }
 
     if dynamic == "auto":
-        dynamic = year == 2024
+        dynamic = year == CURRENT_YEAR
 
     filename = (
         pathlib.Path(__file__).parent.parent
@@ -181,7 +184,9 @@ def execute_notebook_doc(year, league):
     try:
         subprocess.run(command, check=True, stderr=subprocess.PIPE, text=True)
     except subprocess.CalledProcessError as e:
-        print(f"Command '{e.cmd}' returned non-zero exit status {e.returncode}.")
+        print(
+            f"Command '{e.cmd}' returned non-zero exit status {e.returncode}."
+        )
         print(f"Error message: {e.stderr}")
         raise e
 
@@ -741,11 +746,10 @@ def plot_spans(
         return
 
     for label, pos, color in spans:
-
         if (
-            (label == "Champions League") and
-            (year < 2024) and
-            (league in ("E0", "SP1"))
+            (label == "Champions League")
+            and (year < 2024)
+            and (league in ("E0", "SP1"))
         ):
             pos = -4
 
@@ -773,19 +777,20 @@ def plot_spans(
 
 
 def speckle_plot(ax, *args, team, jitter=0.0, **kwargs):
-
     kwargs.setdefault("markersize", 5)
     kwargs.setdefault("markeredgewidth", 0.25)
     kwargs.setdefault("linewidth", 2.5)
 
     if len(args) == 1:
-        ys, = args
+        (ys,) = args
         xs = np.arange(len(ys))
     else:
         xs, ys = args
 
     if jitter != 0.0:
-        xs = np.array(xs) + np.random.uniform(low=-jitter, high=jitter, size=len(xs))
+        xs = np.array(xs) + np.random.uniform(
+            low=-jitter, high=jitter, size=len(xs)
+        )
         # ys = np.array(ys) + np.random.uniform(low=-jitter, high=jitter, size=len(ys))
 
     for color, linestyle, marker, alpha in [
@@ -800,7 +805,7 @@ def speckle_plot(ax, *args, team, jitter=0.0, **kwargs):
             markeredgecolor=get_color1(team),
             alpha=alpha,
             marker=marker,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -981,11 +986,7 @@ def plot_positions(
 
 @setup_and_handle_figure
 def plot_relative_performance(
-    data,
-    ax,
-    highlight="",
-    highlight_color=(0.8, 1.0, 0.0),
-    **kwargs
+    data, ax, highlight="", highlight_color=(0.8, 1.0, 0.0), **kwargs
 ):
     teams = data["teams"]
     ranked_teams = data["ranked_teams"]
@@ -1064,11 +1065,7 @@ def plot_relative_performance(
 
 @setup_and_handle_figure
 def plot_extrapolated_performance(
-    data,
-    ax,
-    highlight="",
-    highlight_color=(0.8, 1.0, 0.0),
-    **kwargs
+    data, ax, highlight="", highlight_color=(0.8, 1.0, 0.0), **kwargs
 ):
     ranked_teams = data["ranked_teams"]
     cumpoints = data["cumpoints"]
@@ -1165,7 +1162,7 @@ def plot_form(
     window_size=5,
     highlight="",
     highlight_color=(0.8, 1.0, 0.0),
-    **kwargs
+    **kwargs,
 ):
     ranked_teams = data["ranked_teams"]
     games_played = data["games_played"]
@@ -1296,12 +1293,12 @@ PENALTIES = {
     ("2023", "E2"): {
         "Wigan": 8,
         "Reading": 6,
-    }
+    },
 }
 
 
 def autoplot(
-    year=2023,
+    year=CURRENT_YEAR,
     league="E0",
     which="cumulative",
     highlight=None,
@@ -1314,7 +1311,9 @@ def autoplot(
     penalties = PENALTIES.get((year, league), None)
 
     if source == "auto":
-        if (league in FIXTUREDOWNLOAD_LEAGUE_ALIASES) and (year == "2023"):
+        if (league in FIXTUREDOWNLOAD_LEAGUE_ALIASES) and (
+            year == str(CURRENT_YEAR)
+        ):
             source = "choose"
         else:
             source = "footballdata"
@@ -1341,7 +1340,10 @@ def autoplot(
         )
 
     data = compute_cumulative_quantities(
-        data, penalties=penalties, league=league, year=year,
+        data,
+        penalties=penalties,
+        league=league,
+        year=year,
     )
 
     with mpl.style.context(NEUTRAL_STYLE):
@@ -1363,6 +1365,5 @@ def autoplot(
                 f"Unknown plot type {which}, should be one of "
                 "'cumulative', 'extrapolated', 'position', 'relative', 'form'"
             )
-
 
         return fn(data, highlight=highlight, figsize=(width, height), **kwargs)
