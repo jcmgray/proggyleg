@@ -287,21 +287,22 @@ style["Wycombe"] = ("#002f62", "#4db7e4", "$W$")
 style["Yeovil"] = ("#4cad21", "#ffff00", "$Y$")
 
 # Scotland
-style["Dundee United"] = ("#fd6701", "#121212", "$D$")
-style["Ross County"] = ("#00065b", "#ee1b24", "$R$")
-style["Kilmarnock"] = ("#2b3390", "#c07634", "$K$")
-style["St Johnstone"] = ("#0052a2", "#ddd3af", "$S$")
-style["Livingston"] = ("#fbc905", "#000000", "$L$")
-style["St Mirren"] = ("#0f0f0f", "#ffffff", "$S$")
-style["Motherwell"] = ("#f6b800", "#9e0000", "$M$")
-style["Hibernian"] = ("#007638", "#f8f9fa", "$H$")
-style["Hearts"] = ("#a1122d", "#d1d3d4", "$H$")
 style["Aberdeen"] = ("#e30013", "#ffffff", "$A$")
-style["Rangers"] = ("#002ea1", "#ffffff", "$R$")
 style["Celtic"] = ("#009d4a", "#fefffe", "$C$")
+style["Dundee United"] = ("#fd6701", "#121212", "$D$")
 style["Dundee"] = ("#152142", "#ffffff", "$D$")
+style["Falkirk"] = ("#00205b", "#f8f9fa", "$F$")
 style["Hamilton"] = ("#cd363d", "#ffffff", "$H$")
+style["Hearts"] = ("#a1122d", "#d1d3d4", "$H$")
+style["Hibernian"] = ("#007638", "#f8f9fa", "$H$")
+style["Kilmarnock"] = ("#2b3390", "#c07634", "$K$")
+style["Livingston"] = ("#fbc905", "#000000", "$L$")
+style["Motherwell"] = ("#f6b800", "#9e0000", "$M$")
 style["Partick"] = ("#a90000", "#ffdf00", "$P$")
+style["Rangers"] = ("#002ea1", "#ffffff", "$R$")
+style["Ross County"] = ("#00065b", "#ee1b24", "$R$")
+style["St Johnstone"] = ("#0052a2", "#ddd3af", "$S$")
+style["St Mirren"] = ("#0f0f0f", "#ffffff", "$S$")
 
 # Germany
 style["Aachen"] = ("#0f0f0f", "#ffde00", "$A$")
@@ -361,6 +362,7 @@ style["Milan"] = ("#e50027", "#000000", "$M$")
 style["Monza"] = ("#ee0e36", "#ffffff", "$M$")
 style["Napoli"] = ("#12a0d7", "#003c82", "$N$")
 style["Parma"] = ("#ffd000", "#1f308b", "$P$")
+style["Pisa"] = ("#1d2421", "#0072b4", "$P$")
 style["Roma"] = ("#980228", "#fbbb00", "$R$")
 style["Salernitana"] = ("#68130a", "#c49a29", "$S$")
 style["Sampdoria"] = ("#007abc", "#dd3214", "$S$")
@@ -387,9 +389,11 @@ style["Girona"] = ("#d00424", "#0042ff", "$G$")
 style["Granada"] = ("#c40e2e", "#0000ff", "$G$")
 style["Las Palmas"] = ("#ffe500", "#004a9e", "$L$")
 style["Leganes"] = ("#ffffff", "#0057b7", "$L$")
+style["Levante"] = ("#2c3143", "#681c29", "$L$")
 style["Mallorca"] = ("#ee141e", "#fff700", "$M$")
 style["Osasuna"] = ("#00003c", "#cd0000", "$O$")
 style["Real Madrid"] = ("#fbfbfb", "#fcc000", "$R$")
+style["Real Oviedo"] = ("#ffd200", "#014ca1", "$O$")
 style["Sevilla"] = ("#f8f9fa", "#d8061b", "$S$")
 style["Sociedad"] = ("#0c398c", "#e7a70c", "$S$")
 style["Valencia"] = ("#ef321f", "#ffe015", "$V$")
@@ -438,6 +442,7 @@ team_aliases = {
     "Coventry City": "Coventry",
     "Deportivo Alavés": "Alaves",
     "Eintracht Frankfurt": "Ein Frankfurt",
+    "Elche CF": "Elche",
     "FC Augsburg": "Augsburg",
     "FC Barcelona": "Barcelona",
     "FC Bayern München": "Bayern Munich",
@@ -450,6 +455,7 @@ team_aliases = {
     "Ipswich Town": "Ipswich",
     "Leeds United": "Leeds",
     "Leicester City": "Leicester",
+    "Levante UD": "Levante",
     "M'gladbach": "Mönchengladbach",
     "Man United": "Man Utd",
     "Milton Keynes Dons": "Milton Keynes",
@@ -460,6 +466,7 @@ team_aliases = {
     "Queens Park Rangers": "QPR",
     "Rayo Vallecano": "Vallecano",
     "RC Celta": "Celta",
+    "RCD Espanyol de Barcelona": "Espanol",
     "RCD Mallorca": "Mallorca",
     "Real Betis": "Betis",
     "Real Sociedad": "Sociedad",
@@ -750,6 +757,11 @@ _SPANS = {
     "SP1": [
         ("Champions League", -5, (0.0, 0.6, 0.3)),
         ("Relegation", 2, (0.3, 0.6, 0.0)),
+    ],
+    "FR1": [
+        ("Champions League", -3, (0.0, 0.6, 0.3)),
+        ("Relegation", 1, (0.3, 0.6, 0.0)),
+        ("Playoff", 2, (0.3, 0.6, 0.0)),
     ],
     "SC0": [
         ("Champions League", -2, (0.0, 0.6, 0.3)),
