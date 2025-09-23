@@ -51,6 +51,7 @@ def generate_notebook_doc(year=CURRENT_YEAR, league="E0", dynamic="auto"):
         "I1": "Serie A",
         "D1": "Bundesliga",
         "SC0": "Scottish Premiership",
+        "FR1": "Ligue 1",
     }
 
     if dynamic == "auto":
@@ -196,6 +197,7 @@ style = collections.defaultdict(lambda: ("grey", "white", "o"))
 
 # England
 style["Accrington"] = ("#c12a19", "#87cefa", "$A$")
+style["AFC Wimbledon"] = ("#004799", "#ffbe00", "$W$")
 style["Arsenal"] = ("#EF0107", "#FFFFFF", "$A$")
 style["Aston Villa"] = ("#95BFE5", "#670E36", "$A$")
 style["Barnsley"] = ("#a80409", "#e1e3e3", "$B$")
@@ -394,6 +396,29 @@ style["Valencia"] = ("#ef321f", "#ffe015", "$V$")
 style["Valladolid"] = ("#6f2989", "#fcd400", "$V$")
 style["Vallecano"] = ("#c0b02c", "#e43215", "$V$")
 style["Villarreal"] = ("#ffe767", "#e80000", "$V$")
+
+# France
+style["Angers"] = ("#000000", "#ffffff", "$A$")
+style["Auxerre"] = ("#ffffff", "#004ea2", "$A$")
+style["Brest"] = ("#ed1e22", "#fefefe", "$B$")
+style["Le Havre"] = ("#193260", "#79bce7", "$L$")
+style["Lens"] = ("#ffc700", "#b71511", "$L$")
+style["Lille"] = ("#e0200a", "#24216a", "$L$")
+style["Lorient"] = ("#231f20", "#f58107", "$L$")
+style["Lyon"] = ("#0624aa", "#f40842", "$L$")
+style["Marseille"] = ("#fdfdfd", "#0297d7", "$M$")
+style["Metz"] = ("#730d0f", "#f7f7f7", "$M$")
+style["Monaco"] = ("#ff092c", "#c1933e", "$M$")
+style["Montpellier"] = ("#ff6600", "#000156", "$M$")
+style["Nantes"] = ("#ffdc00", "#0aa558", "$N$")
+style["Nice"] = ("#070707", "#ff0900", "$N$")
+style["Paris FC"] = ("#000160", "#86cdeb", "$P$")
+style["Paris SG"] = ("#004170", "#e3080a", "$P$")
+style["Reims"] = ("#ffffff", "#f50800", "$R$")
+style["Rennes"] = ("#000000", "#e13425", "$R$")
+style["St Etienne"] = ("#1f995b", "#e9e2d3", "$S$")
+style["Strasbourg"] = ("#029fe3", "#0000dd", "$S$")
+style["Toulouse"] = ("#695188", "#ea6986", "$T$")
 
 team_aliases = {
     "1. FC Heidenheim 1846": "Heidenheim",

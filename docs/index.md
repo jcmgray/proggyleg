@@ -41,6 +41,12 @@ index_bundesliga
 ```{toctree}
 :maxdepth: 1
 
+index_ligue_1
+```
+
+```{toctree}
+:maxdepth: 1
+
 index_scottish_premiership
 ```
 
